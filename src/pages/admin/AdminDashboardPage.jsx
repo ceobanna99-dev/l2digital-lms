@@ -195,7 +195,7 @@ export default function AdminDashboardPage() {
                         overflowY: 'auto',
                         paddingRight: '8px'
                     }}>
-                        {lessonRatings.filter(r => r.comment).slice(0, 20).map(r => (
+                        {lessonRatings.filter(r => r.comment).map(r => (
                             <div key={r.id} style={{ padding: 'var(--space-md)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-sm)' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
