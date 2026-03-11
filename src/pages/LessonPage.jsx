@@ -324,7 +324,7 @@ export default function LessonPage() {
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', gap: '0.75rem' }}>
                     <span>👨‍🏫 ผู้สร้าง: {lesson.instructor || 'ทีมวิชาการ'}</span>
                     <span>•</span>
-                    <span>📅 อัปเดตล่าสุด: {lesson.updatedAt || lesson.createdAt || '-'}</span>
+                    <span>📅 อัปเดตล่าสุด: {lesson.updatedAt || lesson.createdAt ? new Date(lesson.updatedAt || lesson.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</span>
                 </div>
             </div>
 
