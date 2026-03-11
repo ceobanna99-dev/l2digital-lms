@@ -110,7 +110,7 @@ export default function CourseDetailPage() {
                         </div>
                         <div className="course-info-card">
                             <div className="course-info-label">Last Updated</div>
-                            <div className="course-info-value">{course.updatedAt || course.createdAt || 'ไม่ระบุ'}</div>
+                            <div className="course-info-value">{course.updatedAt || course.createdAt ? new Date(course.updatedAt || course.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : 'ไม่ระบุ'}</div>
                         </div>
                         <div className="course-info-card">
                             <div className="course-info-label">Difficulty Level</div>

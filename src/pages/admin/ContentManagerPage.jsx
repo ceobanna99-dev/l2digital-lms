@@ -208,7 +208,7 @@ export default function ContentManagerPage() {
                                         <td style={{ fontSize: '0.85rem' }}>{c.instructor || 'ไม่ระบุ'}</td>
                                         <td><span className="badge badge-primary">{c.category}</span></td>
                                         <td>{lessons.filter(l => l.courseId === c.id).length} บท</td>
-                                        <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{c.updatedAt || c.createdAt || '-'}</td>
+                                        <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{c.updatedAt || c.createdAt ? new Date(c.updatedAt || c.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td>
                                         <td>
                                             <div className="action-buttons">
                                                 <button className="btn btn-ghost btn-sm" onClick={() => openCourseModal(c)}><Edit2 size={14} /></button>
@@ -241,7 +241,7 @@ export default function ContentManagerPage() {
                                             <td><strong>{l.title}</strong></td>
                                             <td>{course?.title || '-'}</td>
                                             <td style={{ fontSize: '0.85rem' }}>{l.instructor || '-'}</td>
-                                            <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{l.updatedAt || l.createdAt || '-'}</td>
+                                            <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{l.updatedAt || l.createdAt ? new Date(l.updatedAt || l.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td>
                                             <td>
                                                 <div className="action-buttons">
                                                     <button className="btn btn-ghost btn-sm" onClick={() => openLessonModal(l)}><Edit2 size={14} /></button>
