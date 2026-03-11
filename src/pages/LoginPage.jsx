@@ -28,7 +28,7 @@ export default function LoginPage() {
             <div className="login-card">
                 <div className="login-logo">
                     <div className="login-logo-icon">📞</div>
-                    <h1>Call Center Academy</h1>
+                    <h1>L2 Mobile Network Academy</h1>
                     <p>ระบบ E-Learning สำหรับพนักงาน</p>
                 </div>
 

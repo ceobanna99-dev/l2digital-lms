@@ -9,7 +9,7 @@ export default function Layout() {
                 <Outlet />
             </main>
             <footer className="site-footer">
-                <p>© 2026 - Learning Management System by <strong>Call Center Academy</strong></p>
+                <p>© 2026 - Learning Management System by <strong>L2 Mobile Network Academy</strong></p>
             </footer>
         </div>
     )

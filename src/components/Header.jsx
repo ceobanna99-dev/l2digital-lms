@@ -35,7 +35,7 @@ export default function Header() {
                     {/* Logo */}
                     <div className="top-nav-brand" onClick={() => navigate(user?.role === 'admin' ? '/admin' : '/dashboard')}>
                         <div className="top-nav-logo">📞</div>
-                        <span className="top-nav-logo-text">Call Center Academy</span>
+                        <span className="top-nav-logo-text">L2 Mobile Network Academy</span>
                     </div>
 
                     {/* Desktop Menu */}
