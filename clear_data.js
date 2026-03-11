@@ -12,20 +12,20 @@ async function clearSupabaseData() {
     // 1. Clear Tracking Data (They reference courses/lessons/users)
     console.log('Deleting from lessonRatings...');
     await supabase.from('lessonRatings').delete().neq('id', 0); // Delete all
-    
+
     console.log('Deleting from lessonProgress...');
     await supabase.from('lessonProgress').delete().neq('id', 0);
-    
+
     console.log('Deleting from quizResults...');
     await supabase.from('quizResults').delete().neq('id', 0);
 
     // 2. Clear Content Data
     console.log('Deleting from quizzes...');
     await supabase.from('quizzes').delete().neq('id', 0);
-    
+
     console.log('Deleting from lessons...');
     await supabase.from('lessons').delete().neq('id', 0);
-    
+
     console.log('Deleting from courses...');
     await supabase.from('courses').delete().neq('id', 0);
 
@@ -44,7 +44,7 @@ function clearDbJson() {
   console.log('Clearing local db.json...');
   try {
     const dbData = JSON.parse(fs.readFileSync('./db.json', 'utf8'));
-    
+
     // KEEP ONLY ADMINS
     const adminsOnly = dbData.users ? dbData.users.filter(user => user.role === 'admin') : [];
 

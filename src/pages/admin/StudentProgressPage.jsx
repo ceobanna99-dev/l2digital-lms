@@ -154,8 +154,8 @@ export default function StudentProgressPage() {
                 const newStudentsList = []
                 for (let i = 1; i < lines.length; i++) {
                     // Simple CSV parser ignoring commas inside quotes
-                    const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(',')
-                    const cleanRow = row.map(col => col.replace(/^"|"$/g, '').trim())
+                    const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+                    const cleanRow = row.map(col => col ? col.replace(/^"|"$/g, '').trim() : '')
                     
                     if (cleanRow.length >= 2 && cleanRow[1]) {
                         newStudentsList.push({
