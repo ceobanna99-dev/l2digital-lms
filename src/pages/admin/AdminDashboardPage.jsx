@@ -187,8 +187,15 @@ export default function AdminDashboardPage() {
                     ความคิดเห็นล่าสุดจากนักเรียน
                 </h3>
                 {lessonRatings.filter(r => r.comment).length > 0 ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-md)' }}>
-                        {lessonRatings.filter(r => r.comment).slice(0, 6).map(r => (
+                    <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+                        gap: 'var(--space-md)',
+                        maxHeight: '400px',
+                        overflowY: 'auto',
+                        paddingRight: '8px'
+                    }}>
+                        {lessonRatings.filter(r => r.comment).slice(0, 20).map(r => (
                             <div key={r.id} style={{ padding: 'var(--space-md)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-sm)' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
