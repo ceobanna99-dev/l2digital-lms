@@ -409,7 +409,7 @@ export default function LessonPage() {
                         <button 
                             className="btn btn-primary" 
                             style={{ width: '100%', marginTop: 'var(--space-md)' }}
-                            disabled={rating === 0 || submittingRating || (existingRating && existingRating.rating === rating && (existingRating.comment || '') === comment)}
+                            disabled={rating === 0 || submittingRating || (existingRating && existingRating.rating === rating && (existingRating.comment || '') === (comment || ''))}
                             onClick={submitRating}
                         >
                             {submittingRating ? 'กำลังส่ง...' : existingRating ? 'อัปเดตคำติชม' : 'ส่งคำติชม'}
