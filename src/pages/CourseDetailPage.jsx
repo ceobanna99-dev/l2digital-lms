@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../config/supabaseClient'
 import { BookOpen, Clock, HelpCircle, ChevronDown, ChevronRight, Lock, CheckCircle, Play, FileText, ArrowLeft, Award, XCircle } from 'lucide-react'
 
 export default function CourseDetailPage() {
@@ -16,23 +17,34 @@ export default function CourseDetailPage() {
     const [expandedLesson, setExpandedLesson] = useState(null)
 
     useEffect(() => {
-        Promise.all([
-            fetch(`/api/courses/${id}`).then(r => r.json()).catch(() => null),
-            fetch(`/api/lessons?courseId=${id}&_sort=order`).then(r => r.json()).catch(() => []),
-            fetch(`/api/quizzes?courseId=${id}`).then(r => r.json()).catch(() => []),
-            fetch(`/api/lessonProgress?userId=${user.id}`).then(r => r.json()).catch(() => []),
-            fetch(`/api/quizResults?userId=${user.id}`).then(r => r.json()).catch(() => [])
-        ]).then(([c, l, q, p, qr]) => {
-            setCourse(c)
-            setLessons(Array.isArray(l) ? l : [])
-            setQuizzes(Array.isArray(q) ? q : [])
-            setProgress(Array.isArray(p) ? p : [])
-            setQuizResults(Array.isArray(qr) ? qr : [])
-            setLoading(false)
-        }).catch(err => {
-            console.error('Error loading course data:', err)
-            setLoading(false)
-        })
+        const fetchData = async () => {
+            try {
+                const [
+                    { data: c },
+                    { data: l },
+                    { data: q },
+                    { data: p },
+                    { data: qr }
+                ] = await Promise.all([
+                    supabase.from('courses').select('*').eq('id', id).single(),
+                    supabase.from('lessons').select('*').eq('courseId', id).order('order'),
+                    supabase.from('quizzes').select('*').eq('courseId', id),
+                    supabase.from('lessonProgress').select('*').eq('userId', user.id),
+                    supabase.from('quizResults').select('*').eq('userId', user.id)
+                ])
+
+                setCourse(c)
+                setLessons(Array.isArray(l) ? l : [])
+                setQuizzes(Array.isArray(q) ? q : [])
+                setProgress(Array.isArray(p) ? p : [])
+                setQuizResults(Array.isArray(qr) ? qr : [])
+            } catch (err) {
+                console.error('Error loading course data:', err)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchData()
     }, [id, user.id])
 
     if (loading) return <div className="loading-spinner" />
