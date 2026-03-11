@@ -22,11 +22,6 @@ export default function LoginPage() {
         setLoading(false)
     }
 
-    const fillDemo = (demoUsername, demoPass) => {
-        setUsername(demoUsername)
-        setPassword(demoPass)
-        setError('')
-    }
 
     return (
         <div className="login-page">
@@ -84,23 +79,6 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <div className="login-demo" style={{ marginTop: 'var(--space-lg)' }}>
-                    <p>บัญชีทดสอบ (คลิกเพื่อกรอกอัตโนมัติ)</p>
-                    <div className="login-demo-accounts" style={{ marginTop: 'var(--space-sm)' }}>
-                        <code
-                            onClick={() => fillDemo('admin@callcenter.com', 'admin123')}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            👑 Admin: admin@callcenter.com / admin123
-                        </code>
-                        <code
-                            onClick={() => fillDemo('somying@callcenter.com', 'student123')}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            👩 นักเรียน: somying@callcenter.com / student123
-                        </code>
-                    </div>
-                </div>
             </div>
         </div>
     )
