@@ -26,9 +26,22 @@ export default function LoginPage() {
     return (
         <div className="login-page">
             <div className="login-card">
-                <div className="login-logo">
-                    <img src="/logo.jpg" alt="L2 Mobile Network Academy Logo" style={{ width: '80px', height: '80px', borderRadius: '16px', marginBottom: '1rem', objectFit: 'cover' }} />
-                    <h1>L2 Mobile Network Academy</h1>
+                <div className="login-logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+                    <img 
+                        src="/logo.jpg" 
+                        alt="L2 Mobile Network Academy Logo" 
+                        style={{ 
+                            width: '220px', 
+                            height: '220px', 
+                            borderRadius: '32px', 
+                            marginBottom: '1.5rem', 
+                            objectFit: 'cover',
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+                        }} 
+                    />
+                    <h1 style={{ fontSize: '1.75rem', lineHeight: '1.3' }}>
+                        L2 Mobile Network<br/>Academy
+                    </h1>
                     <p>ระบบ E-Learning สำหรับพนักงาน</p>
                 </div>
 
