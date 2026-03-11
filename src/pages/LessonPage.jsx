@@ -192,16 +192,30 @@ export default function LessonPage() {
             const vidMatch = line.match(/^\[video\]\(([^)]+)\)/)
             if (vidMatch) {
                 const url = vidMatch[1]
+                const isDirectMp4 = url.toLowerCase().endsWith('.mp4')
+
                 return (
-                    <div key={i} style={{ margin: 'var(--space-lg) 0', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-                        <ReactPlayer 
-                            url={url} 
-                            controls 
-                            width="100%" 
-                            height="100%" 
-                            style={{ position: 'absolute', top: 0, left: 0 }}
-                            onEnded={() => setCompletedVideoIndices(prev => new Set(prev).add(i))}
-                        />
+                    <div key={i} style={{ margin: 'var(--space-lg) 0', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', position: 'relative', paddingBottom: isDirectMp4 ? 'auto' : '56.25%', height: isDirectMp4 ? 'auto' : 0 }}>
+                        {isDirectMp4 ? (
+                            <video 
+                                src={url} 
+                                controls 
+                                width="100%" 
+                                style={{ display: 'block', borderRadius: 'var(--radius-lg)' }}
+                                onEnded={() => setCompletedVideoIndices(prev => new Set(prev).add(i))}
+                            >
+                                Your browser does not support the video tag.
+                            </video>
+                        ) : (
+                            <ReactPlayer 
+                                url={url} 
+                                controls 
+                                width="100%" 
+                                height="100%" 
+                                style={{ position: 'absolute', top: 0, left: 0 }}
+                                onEnded={() => setCompletedVideoIndices(prev => new Set(prev).add(i))}
+                            />
+                        )}
                     </div>
                 )
             }
