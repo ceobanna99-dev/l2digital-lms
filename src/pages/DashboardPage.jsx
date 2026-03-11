@@ -256,8 +256,7 @@ export default function DashboardPage() {
                                             <span className="badge badge-primary" style={{ fontSize: '0.7rem', marginBottom: '0.5rem', display: 'inline-block' }}>{course.category}</span>
                                             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', gap: '0.5rem' }}>
                                                 <span>👨‍🏫 {course.instructor || 'ทีมวิชาการ'}</span>
-                                                <span>•</span>
-                                                <span>📅 {course.updatedAt || course.createdAt || 'ไม่ระบุ'}</span>
+                                                <span>📅 {course.updatedAt || course.createdAt ? new Date(course.updatedAt || course.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : 'ไม่ระบุ'}</span>
                                             </div>
                                         </div>
                                     </div>
