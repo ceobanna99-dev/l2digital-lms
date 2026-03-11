@@ -124,6 +124,7 @@ export default function ContentManagerPage() {
 
     // ---- Lesson CRUD ----
     const [lessonForm, setLessonForm] = useState({ title: '', content: '', courseId: '', order: 1, instructor: '' })
+    const contentRef = useRef(null)
 
     const openLessonModal = (lesson = null) => {
         setTab('lessons')
@@ -203,7 +204,7 @@ export default function ContentManagerPage() {
                                 {courses.map(c => (
                                     <tr key={c.id}>
                                         <td style={{ fontSize: '1.5rem' }}>{c.thumbnail}</td>
-                                        <td><strong>{c.title}</strong><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{c.description.slice(0, 60)}...</div></td>
+                                        <td><strong>{c.title}</strong><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{(c.description || '').slice(0, 60)}...</div></td>
                                         <td style={{ fontSize: '0.85rem' }}>{c.instructor || 'ไม่ระบุ'}</td>
                                         <td><span className="badge badge-primary">{c.category}</span></td>
                                         <td>{lessons.filter(l => l.courseId === c.id).length} บท</td>
