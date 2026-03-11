@@ -33,8 +33,8 @@ export default function Header() {
             <header className="top-nav">
                 <div className="top-nav-inner">
                     {/* Logo */}
-                    <div className="top-nav-brand" onClick={() => navigate(user?.role === 'admin' ? '/admin' : '/dashboard')}>
-                        <div className="top-nav-logo">📞</div>
+                    <div className="top-nav-brand" onClick={() => navigate(user?.role === 'admin' ? '/admin' : '/dashboard')} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
+                        <img src="/logo.jpg" alt="Logo" style={{ width: '36px', height: '36px', borderRadius: '8px', objectFit: 'cover' }} />
                         <span className="top-nav-logo-text">L2 Mobile Network Academy</span>
                     </div>
 

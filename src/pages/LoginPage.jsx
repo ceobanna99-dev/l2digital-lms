@@ -27,7 +27,7 @@ export default function LoginPage() {
         <div className="login-page">
             <div className="login-card">
                 <div className="login-logo">
-                    <div className="login-logo-icon">📞</div>
+                    <img src="/logo.jpg" alt="L2 Mobile Network Academy Logo" style={{ width: '80px', height: '80px', borderRadius: '16px', marginBottom: '1rem', objectFit: 'cover' }} />
                     <h1>L2 Mobile Network Academy</h1>
                     <p>ระบบ E-Learning สำหรับพนักงาน</p>
                 </div>
