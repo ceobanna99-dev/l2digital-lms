@@ -16,6 +16,8 @@ export default function LessonPage() {
     const [loading, setLoading] = useState(true)
     const [totalVideos, setTotalVideos] = useState(0)
     const [completedVideoIndices, setCompletedVideoIndices] = useState(new Set())
+    const [lessonQuizzes, setLessonQuizzes] = useState([])
+    const [passedQuizzes, setPassedQuizzes] = useState(false)
     
     // Rating states
     const [rating, setRating] = useState(0)
@@ -35,19 +37,37 @@ export default function LessonPage() {
                 }
                 setLesson(lessonData)
 
-                // Fetch other required data in parallel
                 const [
                     { data: allLessonsData },
                     { data: progressData },
-                    { data: ratingData }
+                    { data: ratingData },
+                    { data: quizzesData },
+                    { data: quizResultsData }
                 ] = await Promise.all([
                     supabase.from('lessons').select('*').eq('courseId', lessonData.courseId).order('order', { ascending: true }),
                     supabase.from('lessonProgress').select('*').eq('userId', user.id).eq('lessonId', id),
-                    supabase.from('lessonRatings').select('*').eq('userId', user.id).eq('lessonId', id)
+                    supabase.from('lessonRatings').select('*').eq('userId', user.id).eq('lessonId', id),
+                    supabase.from('quizzes').select('*').eq('lessonId', id),
+                    supabase.from('quizResults').select('*').eq('userId', user.id)
                 ])
 
                 setAllLessons(allLessonsData || [])
                 setProgress(progressData && progressData.length > 0 ? progressData[0] : null)
+                
+                // Check if all quizzes for this lesson are passed
+                const quizzes = quizzesData || []
+                setLessonQuizzes(quizzes)
+                
+                if (quizzes.length > 0) {
+                    const results = quizResultsData || []
+                    const allPassed = quizzes.every(quiz => {
+                        const bestResult = results.filter(r => r.quizId === quiz.id).reduce((best, r) => r.score > best.score ? r : best, { score: -1 })
+                        return bestResult.score >= quiz.passingScore
+                    })
+                    setPassedQuizzes(allPassed)
+                } else {
+                    setPassedQuizzes(true)
+                }
                 
                 if (ratingData && ratingData.length > 0) {
                     setExistingRating(ratingData[0])
@@ -335,17 +355,36 @@ export default function LessonPage() {
 
             {/* Actions */}
             {!isCompleted ? (
-                <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
-                    <button 
-                        className={`btn btn-lg ${isAllVideosCompleted ? 'btn-success' : 'btn-secondary'}`} 
-                        onClick={markComplete}
-                        disabled={!isAllVideosCompleted}
-                        style={{ opacity: isAllVideosCompleted ? 1 : 0.6, cursor: isAllVideosCompleted ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto' }}
-                    >
-                        <CheckCircle size={20} /> 
-                        {isAllVideosCompleted ? 'เสร็จสิ้นบทเรียนนี้' : 'ดูวีดีโอให้จบเพื่อผ่านบทเรียน'}
-                    </button>
-                </div>
+                <>
+                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+                        <button 
+                            className={`btn btn-lg ${isAllVideosCompleted ? 'btn-success' : 'btn-secondary'}`} 
+                            onClick={markComplete}
+                            disabled={!isAllVideosCompleted}
+                            style={{ opacity: isAllVideosCompleted ? 1 : 0.6, cursor: isAllVideosCompleted ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto' }}
+                        >
+                            <CheckCircle size={20} /> 
+                            {isAllVideosCompleted ? 'เสร็จสิ้นบทเรียนนี้' : 'ดูวีดีโอให้จบเพื่อผ่านบทเรียน'}
+                        </button>
+                    </div>
+                    {lessonQuizzes.length > 0 && !passedQuizzes && (
+                        <div className="glass-card glass-card--static" style={{ marginBottom: 'var(--space-lg)', textAlign: 'center', borderColor: 'var(--accent-warning)', background: 'rgba(245, 158, 11, 0.05)' }}>
+                            <h3 style={{ color: 'var(--accent-warning)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                                ⚠️ กรุณาทำแบบทดสอบให้ผ่าน
+                            </h3>
+                            <p style={{ margin: 'var(--space-sm) 0', color: 'var(--text-secondary)' }}>
+                                คุณมีแบบทดสอบที่ต้องทำให้ผ่านก่อน จึงจะสามารถไปยังบทเรียนถัดไปได้
+                            </p>
+                            <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center', marginTop: 'var(--space-md)' }}>
+                                {lessonQuizzes.map(quiz => (
+                                    <button key={quiz.id} className="btn btn-outline" onClick={() => navigate(`/quiz/${quiz.id}`)}>
+                                        ทำแบบทดสอบ: {quiz.title}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
             ) : (
                 <div className="glass-card glass-card--static" style={{ marginBottom: 'var(--space-lg)', textAlign: 'center' }}>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 'var(--space-sm)' }}>คุณคิดอย่างไรกับบทเรียนนี้?</h3>
@@ -411,7 +450,12 @@ export default function LessonPage() {
                     </button>
                 ) : <div />}
                 {nextLesson ? (
-                    <button className="btn btn-primary" onClick={() => navigate(`/lessons/${nextLesson.id}`)}>
+                    <button 
+                        className={`btn ${passedQuizzes ? 'btn-primary' : 'btn-secondary'}`} 
+                        onClick={() => navigate(`/lessons/${nextLesson.id}`)}
+                        disabled={!passedQuizzes}
+                        title={!passedQuizzes ? "กรุณาทำแบบทดสอบประจำบทให้ผ่านก่อน" : ""}
+                    >
                         {nextLesson.title} <ArrowRight size={16} />
                     </button>
                 ) : (
