@@ -126,10 +126,22 @@ export default function StudentProgressPage() {
     const handleExportCSV = () => {
         if (students.length === 0) return
         
-        const headers = ['รหัสพนักงาน', 'ชื่อ-นามสกุล', 'อีเมล', 'แผนก', 'รหัสผ่าน']
+        const headers = ['รหัสพนักงาน', 'ชื่อ-นามสกุล', 'อีเมล', 'แผนก', 'บทเรียนที่เรียนจบ', 'บทเรียนทั้งหมด', 'คะแนนเฉลี่ย (%)', 'จำนวนที่สอบ']
+        
+        const csvRows = students.map(student => {
+            const results = quizResults.filter(r => r.userId === student.id)
+            const progress = lessonProgress.filter(p => p.userId === student.id)
+            const completedLessons = progress.filter(p => p.completed).length
+            const avgScore = results.length > 0
+                ? Math.round(results.reduce((a, b) => a + b.score, 0) / results.length)
+                : 0
+            
+            return `"${student.employeeId || ''}","${student.name}","${student.email || ''}","${student.department}","${completedLessons}","${lessons.length}","${avgScore}","${results.length}"`
+        });
+
         const csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
             + headers.join(",") + "\n"
-            + students.map(s => `"${s.employeeId || ''}","${s.name}","${s.email || ''}","${s.department}",""`).join("\n")
+            + csvRows.join("\n")
             
         const encodedUri = encodeURI(csvContent)
         const link = document.createElement("a")
