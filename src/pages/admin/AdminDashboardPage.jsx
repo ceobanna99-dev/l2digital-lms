@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../config/supabaseClient'
-import { Users, BookOpen, FileQuestion, TrendingUp, Trophy, Star, MessageSquare } from 'lucide-react'
+import { Users, BookOpen, FileQuestion, TrendingUp, Trophy, Star, MessageSquare, GraduationCap } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
 
 export default function AdminDashboardPage() {
@@ -68,9 +68,14 @@ export default function AdminDashboardPage() {
         ? (lessonRatings.reduce((a, b) => a + b.rating, 0) / lessonRatings.length).toFixed(1)
         : 0
 
+    const completedStudentsCount = lessons.length > 0 
+        ? users.filter(u => lessonProgress.filter(p => p.userId === u.id && p.completed).length === lessons.length).length
+        : 0;
+
     const stats = [
         { icon: Users, label: 'นักเรียนทั้งหมด', value: totalStudents, color: '#7c3aed' },
         { icon: BookOpen, label: 'คอร์สทั้งหมด', value: courses.length, color: '#06b6d4' },
+        { icon: GraduationCap, label: 'เรียนจบแล้ว', value: completedStudentsCount, color: '#3b82f6' },
         { icon: TrendingUp, label: 'คะแนนเฉลี่ย', value: `${avgScore}%`, color: '#f59e0b' },
         { icon: Trophy, label: 'อัตราผ่าน', value: `${passRate}%`, color: '#10b981' },
         { icon: Star, label: 'ความพึงพอใจ', value: `${avgRating}/5`, color: '#ec4899' },
