@@ -355,36 +355,17 @@ export default function LessonPage() {
 
             {/* Actions */}
             {!isCompleted ? (
-                <>
-                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
-                        <button 
-                            className={`btn btn-lg ${isAllVideosCompleted ? 'btn-success' : 'btn-secondary'}`} 
-                            onClick={markComplete}
-                            disabled={!isAllVideosCompleted}
-                            style={{ opacity: isAllVideosCompleted ? 1 : 0.6, cursor: isAllVideosCompleted ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto' }}
-                        >
-                            <CheckCircle size={20} /> 
-                            {isAllVideosCompleted ? 'เสร็จสิ้นบทเรียนนี้' : 'ดูวีดีโอให้จบเพื่อผ่านบทเรียน'}
-                        </button>
-                    </div>
-                    {lessonQuizzes.length > 0 && !passedQuizzes && (
-                        <div className="glass-card glass-card--static" style={{ marginBottom: 'var(--space-lg)', textAlign: 'center', borderColor: 'var(--accent-warning)', background: 'rgba(245, 158, 11, 0.05)' }}>
-                            <h3 style={{ color: 'var(--accent-warning)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                                ⚠️ กรุณาทำแบบทดสอบให้ผ่าน
-                            </h3>
-                            <p style={{ margin: 'var(--space-sm) 0', color: 'var(--text-secondary)' }}>
-                                คุณมีแบบทดสอบที่ต้องทำให้ผ่านก่อน จึงจะสามารถไปยังบทเรียนถัดไปได้
-                            </p>
-                            <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center', marginTop: 'var(--space-md)' }}>
-                                {lessonQuizzes.map(quiz => (
-                                    <button key={quiz.id} className="btn btn-outline" onClick={() => navigate(`/quiz/${quiz.id}`)}>
-                                        ทำแบบทดสอบ: {quiz.title}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </>
+                <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+                    <button 
+                        className={`btn btn-lg ${isAllVideosCompleted ? 'btn-success' : 'btn-secondary'}`} 
+                        onClick={markComplete}
+                        disabled={!isAllVideosCompleted}
+                        style={{ opacity: isAllVideosCompleted ? 1 : 0.6, cursor: isAllVideosCompleted ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 auto' }}
+                    >
+                        <CheckCircle size={20} /> 
+                        {isAllVideosCompleted ? 'เสร็จสิ้นบทเรียนนี้' : 'ดูวีดีโอให้จบเพื่อผ่านบทเรียน'}
+                    </button>
+                </div>
             ) : (
                 <div className="glass-card glass-card--static" style={{ marginBottom: 'var(--space-lg)', textAlign: 'center' }}>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 'var(--space-sm)' }}>คุณคิดอย่างไรกับบทเรียนนี้?</h3>
@@ -439,6 +420,25 @@ export default function LessonPage() {
                             <CheckCircle size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }}/> ขอบคุณสำหรับคะแนนประเมินของคุณ
                         </p>
                     )}
+                </div>
+            )}
+
+            {/* Quiz Warning - Shows regardless of whether the lesson itself is marked completed */}
+            {lessonQuizzes.length > 0 && !passedQuizzes && (
+                <div className="glass-card glass-card--static" style={{ marginBottom: 'var(--space-lg)', textAlign: 'center', borderColor: 'var(--accent-warning)', background: 'rgba(245, 158, 11, 0.05)' }}>
+                    <h3 style={{ color: 'var(--accent-warning)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                        ⚠️ กรุณาทำแบบทดสอบประจำบท
+                    </h3>
+                    <p style={{ margin: 'var(--space-sm) 0', color: 'var(--text-secondary)' }}>
+                        คุณมีแบบทดสอบที่ต้องทำให้ผ่านก่อน จึงจะสามารถไปยังบทเรียนถัดไปได้
+                    </p>
+                    <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center', marginTop: 'var(--space-md)' }}>
+                        {lessonQuizzes.map(quiz => (
+                            <button key={quiz.id} className="btn btn-primary" onClick={() => navigate(`/quiz/${quiz.id}`)}>
+                                เริ่มทำ: {quiz.title}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
 
