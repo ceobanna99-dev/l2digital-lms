@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { BookOpen, LayoutDashboard, FileText, Users, ClipboardList, LogOut, Menu, X, Bell, ChevronDown } from 'lucide-react'
+import { BookOpen, LayoutDashboard, FileText, Users, ClipboardList, LogOut, Menu, X, Bell, ChevronDown, User } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Header() {
