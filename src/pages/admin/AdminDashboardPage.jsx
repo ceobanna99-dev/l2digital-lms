@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../config/supabaseClient'
-import { Users, BookOpen, FileQuestion, TrendingUp, Trophy, Star, MessageSquare, GraduationCap } from 'lucide-react'
+import { Users, BookOpen, FileQuestion, TrendingUp, Trophy, Star, MessageSquare, GraduationCap, XCircle } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
 
 export default function AdminDashboardPage() {
@@ -11,6 +11,7 @@ export default function AdminDashboardPage() {
     const [lessonRatings, setLessonRatings] = useState([])
     const [loading, setLoading] = useState(true)
     const [lessons, setLessons] = useState([])
+    const [filterRange, setFilterRange] = useState(null)
 
     useEffect(() => {
         const fetchAdminData = async () => {
@@ -96,18 +97,6 @@ export default function AdminDashboardPage() {
         }
     })
 
-    // Score distribution for donut chart
-    const totalQuizzes = quizResults.length
-    const scoreRanges = [
-        { name: 'ดีเยี่ยม (90-100%)', value: quizResults.filter(r => r.score >= 90).length, color: '#10b981' },
-        { name: 'ดี (70-89%)', value: quizResults.filter(r => r.score >= 70 && r.score < 90).length, color: '#06b6d4' },
-        { name: 'พอใช้ (50-69%)', value: quizResults.filter(r => r.score >= 50 && r.score < 70).length, color: '#f59e0b' },
-        { name: 'ต้องปรับปรุง (<50%)', value: quizResults.filter(r => r.score < 50).length, color: '#ef4444' },
-    ].map(r => ({
-        ...r,
-        percentage: totalQuizzes > 0 ? Math.round((r.value / totalQuizzes) * 100) : 0
-    })).filter(r => r.value > 0)
-
     const PIE_COLORS = ['#10b981', '#06b6d4', '#f59e0b', '#ef4444']
 
     // Per-student performance
@@ -115,8 +104,33 @@ export default function AdminDashboardPage() {
         const results = quizResults.filter(r => r.userId === u.id)
         const avg = results.length > 0 ? Math.round(results.reduce((a, b) => a + b.score, 0) / results.length) : 0
         const progress = lessonProgress.filter(p => p.userId === u.id && p.completed).length
-        return { name: u.name, คะแนนเฉลี่ย: avg, บทเรียน: progress }
+        return { name: u.name, คะแนนเฉลี่ย: avg, บทเรียน: progress, id: u.id }
     })
+
+    // Score distribution for donut chart (Student-based)
+    const scoreRanges = [
+        { name: 'ดีเยี่ยม (90-100%)', range: [90, 100], color: '#10b981' },
+        { name: 'ดี (70-89%)', range: [70, 89], color: '#06b6d4' },
+        { name: 'พอใช้ (50-69%)', range: [50, 69], color: '#f59e0b' },
+        { name: 'ต้องปรับปรุง (<50%)', range: [0, 49], color: '#ef4444' },
+    ].map(r => {
+        const count = studentPerformance.filter(s => s.คะแนนเฉลี่ย >= r.range[0] && s.คะแนนเฉลี่ย <= r.range[1]).length
+        return {
+            ...r,
+            value: count,
+            percentage: users.length > 0 ? Math.round((count / users.length) * 100) : 0
+        }
+    }).filter(r => r.value > 0)
+
+    const totalQuizzes = quizResults.length
+
+    // Filtered users for table
+    const filteredUsers = filterRange 
+        ? users.filter(u => {
+            const perf = studentPerformance.find(p => p.id === u.id)
+            return perf && perf.คะแนนเฉลี่ย >= filterRange.range[0] && perf.คะแนนเฉลี่ย <= filterRange.range[1]
+        })
+        : users
 
     return (
         <div className="animate-fade-in">
@@ -231,21 +245,38 @@ export default function AdminDashboardPage() {
                                 </PieChart>
                             </ResponsiveContainer>
                             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>รวมทั้งหมด</div>
-                                <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{totalQuizzes}</div>
-                                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>ครั้งทดสอบ</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>นักเรียนทั้งหมด</div>
+                                <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{users.length}</div>
+                                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>คน</div>
                             </div>
                         </div>
                         <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                            {scoreRanges.map((range, i) => (
-                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: range.color }} />
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>{range.name}</div>
-                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{range.value} คน ({range.percentage}%)</div>
+                            {scoreRanges.map((range, i) => {
+                                const isActive = filterRange?.name === range.name
+                                return (
+                                    <div 
+                                        key={i} 
+                                        onClick={() => setFilterRange(isActive ? null : range)}
+                                        style={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: '10px', 
+                                            cursor: 'pointer',
+                                            padding: '8px',
+                                            borderRadius: '8px',
+                                            background: isActive ? 'var(--bg-tertiary)' : 'transparent',
+                                            transition: 'all 0.2s',
+                                            border: isActive ? '1px solid var(--border-color)' : '1px solid transparent'
+                                        }}
+                                    >
+                                        <div style={{ width: 10, height: 10, borderRadius: '50%', background: range.color }} />
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isActive ? 'var(--accent-primary)' : 'inherit' }}>{range.name}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{range.value} คน ({range.percentage}%)</div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     </div>
                 </div>
@@ -297,10 +328,21 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Student Table */}
-            <div className="glass-card glass-card--static">
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
-                    รายชื่อนักเรียน
-                </h3>
+            <div className="glass-card glass-card--static" id="student-list">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>
+                        รายชื่อนักเรียน {filterRange && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}> - กลุ่ม{filterRange.name}</span>}
+                    </h3>
+                    {filterRange && (
+                        <button 
+                            className="btn btn-ghost btn-sm" 
+                            onClick={() => setFilterRange(null)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-danger)' }}
+                        >
+                            <XCircle size={14} /> ล้างการกรอง
+                        </button>
+                    )}
+                </div>
                 <div className="admin-table-container">
                     <table className="data-table">
                         <thead>
@@ -313,10 +355,10 @@ export default function AdminDashboardPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map(u => {
-                                const results = quizResults.filter(r => r.userId === u.id)
-                                const avg = results.length > 0 ? Math.round(results.reduce((a, b) => a + b.score, 0) / results.length) : 0
-                                const progress = lessonProgress.filter(p => p.userId === u.id && p.completed).length
+                            {filteredUsers.map(u => {
+                                const perf = studentPerformance.find(p => p.id === u.id)
+                                const avg = perf?.คะแนนเฉลี่ย || 0
+                                const progress = perf?.บทเรียน || 0
                                 return (
                                     <tr key={u.id}>
                                         <td>
@@ -337,7 +379,7 @@ export default function AdminDashboardPage() {
                                                 <span className="badge badge-success">ดีเยี่ยม</span>
                                             ) : avg >= 60 ? (
                                                 <span className="badge badge-warning">ผ่าน</span>
-                                            ) : results.length > 0 ? (
+                                            ) : quizResults.filter(r => r.userId === u.id).length > 0 ? (
                                                 <span className="badge badge-danger">ต้องปรับปรุง</span>
                                             ) : (
                                                 <span className="badge badge-info">ยังไม่สอบ</span>
@@ -346,6 +388,13 @@ export default function AdminDashboardPage() {
                                     </tr>
                                 )
                             })}
+                            {filteredUsers.length === 0 && (
+                                <tr>
+                                    <td colSpan="5" style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--text-muted)' }}>
+                                        ไม่พบรายชื่อในกลุ่มนี้
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
