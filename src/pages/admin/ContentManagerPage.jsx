@@ -266,16 +266,32 @@ export default function ContentManagerPage() {
                     </div>
                     <div className="glass-card glass-card--static">
                         <table className="data-table">
-                            <thead><tr><th>ลำดับ</th><th>ชื่อบทเรียน</th><th>คอร์ส</th><th>ผู้สอน/ผู้สร้าง</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
+                            <thead><tr><th>ลำดับ</th><th>ชื่อบทเรียน</th><th>คอร์ส</th><th>ผู้สอน/ผู้สร้าง</th><th>ความคืบหน้า</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
                             <tbody>
                                 {lessons.map(l => {
                                     const course = courses.find(c => c.id === l.courseId)
+                                    const lessonProgressData = lessonProgress.filter(p => p.lessonId === l.id && p.completed)
+                                    const totalCompleted = lessonProgressData.length
+                                    const totalStudentsCount = allStudents.length
+                                    const percent = totalStudentsCount > 0 ? Math.round((totalCompleted / totalStudentsCount) * 100) : 0
+
                                     return (
                                         <tr key={l.id}>
                                             <td>{l.order}</td>
                                             <td><strong>{l.title}</strong></td>
                                             <td>{course?.title || '-'}</td>
                                             <td style={{ fontSize: '0.85rem' }}>{l.instructor || '-'}</td>
+                                            <td>
+                                                <div className="flex flex-col gap-xs" style={{ minWidth: 100 }}>
+                                                    <div className="flex justify-between items-center" style={{ fontSize: '0.75rem', marginBottom: 4 }}>
+                                                        <span style={{ fontWeight: 600, color: 'var(--accent-success)' }}>{percent}%</span>
+                                                        <span style={{ color: 'var(--text-muted)' }}>{totalCompleted}/{totalStudentsCount} คน</span>
+                                                    </div>
+                                                    <div className="progress-bar" style={{ height: 6 }}>
+                                                        <div className="progress-bar-fill" style={{ width: `${percent}%`, background: 'var(--gradient-success)' }}></div>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{l.updatedAt || l.createdAt ? new Date(l.updatedAt || l.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td>
                                             <td>
                                                 <div className="action-buttons">
