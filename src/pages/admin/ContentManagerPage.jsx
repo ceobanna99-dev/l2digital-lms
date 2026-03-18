@@ -11,6 +11,7 @@ export default function ContentManagerPage() {
     const [loading, setLoading] = useState(true)
     const [uploading, setUploading] = useState(false)
     const [lessonProgress, setLessonProgress] = useState([])
+    const [allStudents, setAllStudents] = useState([])
 
     const loadData = async () => {
         try {
@@ -18,14 +19,17 @@ export default function ContentManagerPage() {
                 { data: c },
                 { data: l },
                 { data: p },
+                { data: s },
             ] = await Promise.all([
                 supabase.from('courses').select('*'),
                 supabase.from('lessons').select('*'),
                 supabase.from('lessonProgress').select('*'),
+                supabase.from('users').select('*').eq('role', 'student'),
             ])
             setCourses(c || [])
             setLessons(l || [])
             setLessonProgress(p || [])
+            setAllStudents(s || [])
         } catch (err) {
             console.error("Error loading data:", err)
         } finally {
@@ -209,12 +213,13 @@ export default function ContentManagerPage() {
                                     const courseLessons = lessons.filter(l => l.courseId === c.id)
                                     const lessonIds = courseLessons.map(l => l.id)
                                     const relevantProgress = lessonProgress.filter(p => lessonIds.includes(p.lessonId))
-                                    const enrolledUserIds = [...new Set(relevantProgress.map(p => p.userId))]
-                                    const totalEnrolled = enrolledUserIds.length
+                                    const startedUserIds = [...new Set(relevantProgress.map(p => p.userId))]
+                                    const totalStarted = startedUserIds.length
+                                    const totalStudentsCount = allStudents.length
                                     
                                     let avgProgress = 0
-                                    if (totalEnrolled > 0 && courseLessons.length > 0) {
-                                        const totalPossible = totalEnrolled * courseLessons.length
+                                    if (totalStudentsCount > 0 && courseLessons.length > 0) {
+                                        const totalPossible = totalStudentsCount * courseLessons.length
                                         const totalCompleted = relevantProgress.filter(p => p.completed).length
                                         avgProgress = Math.round((totalCompleted / totalPossible) * 100)
                                     }
@@ -230,7 +235,7 @@ export default function ContentManagerPage() {
                                                 <div className="flex flex-col gap-xs" style={{ minWidth: 120 }}>
                                                     <div className="flex justify-between items-center" style={{ fontSize: '0.75rem', marginBottom: 4 }}>
                                                         <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>{avgProgress}%</span>
-                                                        <span style={{ color: 'var(--text-muted)' }}>{totalEnrolled} คน</span>
+                                                        <span style={{ color: 'var(--text-muted)' }}>{totalStarted}/{totalStudentsCount} คน</span>
                                                     </div>
                                                     <div className="progress-bar" style={{ height: 6 }}>
                                                         <div className="progress-bar-fill" style={{ width: `${avgProgress}%` }}></div>
