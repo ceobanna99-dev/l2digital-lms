@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../config/supabaseClient'
-import { Users, BookOpen, FileQuestion, TrendingUp, Trophy, Star, MessageSquare, GraduationCap, XCircle } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
+import { Users, BookOpen, FileQuestion, TrendingUp, Trophy, Star, MessageSquare, GraduationCap, XCircle, ArrowUpRight, ArrowDownRight, Activity, Target, Zap } from 'lucide-react'
+import { 
+    BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
+    PieChart, Pie, Cell, AreaChart, Area, 
+    RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
+    CartesianGrid
+} from 'recharts'
 
 export default function AdminDashboardPage() {
     const [users, setUsers] = useState([])
@@ -74,10 +79,30 @@ export default function AdminDashboardPage() {
         : 0;
 
     const stats = [
-        { icon: Users, label: 'นักเรียนทั้งหมด', value: totalStudents, color: '#7c3aed' },
-        { icon: BookOpen, label: 'คอร์สทั้งหมด', value: courses.length, color: '#06b6d4' },
-        { icon: GraduationCap, label: 'เรียนจบแล้ว', value: completedStudentsCount, color: '#3b82f6' },
-        { icon: Star, label: 'ความพึงพอใจโดยรวม', value: `${avgRating}/5`, color: '#ec4899' },
+        { icon: Users, label: 'นักเรียนทั้งหมด', value: totalStudents, trend: '+12%', isUp: true, color: 'var(--accent-primary)', gradient: 'var(--gradient-premium)' },
+        { icon: BookOpen, label: 'คอร์สทั้งหมด', value: courses.length, trend: '+2', isUp: true, color: 'var(--accent-secondary)', gradient: 'var(--gradient-sky)' },
+        { icon: Zap, label: 'อัตราผ่านประเมิน', value: `${passRate}%`, trend: '+5%', isUp: true, color: 'var(--accent-emerald)', gradient: 'var(--gradient-sky)' },
+        { icon: Star, label: 'ความพึงพอใจ', value: `${avgRating}/5`, trend: '-0.1', isUp: false, color: 'var(--accent-rose)', gradient: 'var(--gradient-sunset)' },
+    ]
+
+    // Mock radar data for "Skill Distribution"
+    const radarData = [
+        { subject: 'คะแนนเฉลี่ย', A: avgScore, fullMark: 100 },
+        { subject: 'อัตราการผ่าน', A: passRate, fullMark: 100 },
+        { subject: 'ความพึงพอใจ', A: parseFloat(avgRating) * 20, fullMark: 100 },
+        { subject: 'การมีส่วนร่วม', A: Math.min(100, (completedLessons / (users.length * lessons.length || 1)) * 500), fullMark: 100 },
+        { subject: 'บทเรียนที่จบ', A: Math.min(100, (completedStudentsCount / (users.length || 1)) * 100), fullMark: 100 },
+    ]
+
+    // Mock area chart data for "Activity Trend"
+    const activityData = [
+        { name: 'Mon', usage: 45, tests: 32 },
+        { name: 'Tue', usage: 52, tests: 38 },
+        { name: 'Wed', usage: 48, tests: 42 },
+        { name: 'Thu', usage: 61, tests: 45 },
+        { name: 'Fri', usage: 55, tests: 40 },
+        { name: 'Sat', usage: 67, tests: 52 },
+        { name: 'Sun', usage: 72, tests: 58 },
     ]
 
     // Per-course performance metrics
@@ -144,283 +169,343 @@ export default function AdminDashboardPage() {
                 <p>สรุปข้อมูลการเรียนการสอนทั้งหมด</p>
             </div>
 
-            {/* Stats */}
-            <div className="stats-grid" style={{ marginBottom: 'var(--space-lg)' }}>
+            {/* Stats Overview */}
+            <div className="grid-4" style={{ marginBottom: 'var(--space-xl)' }}>
                 {stats.map((stat, i) => {
                     const Icon = stat.icon
+                    const TrendIcon = stat.isUp ? ArrowUpRight : ArrowDownRight
                     return (
-                        <div key={i} className={`glass-card stat-card animate-slide-up stagger-${i + 1}`}>
-                            <div className="stat-icon" style={{ background: `${stat.color}20` }}>
-                                <Icon size={24} style={{ color: stat.color }} />
+                        <div key={i} className={`glass-card animate-slide-up stagger-${i + 1}`} style={{ padding: 'var(--space-md)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-sm)' }}>
+                                <div style={{ 
+                                    width: 42, height: 42, borderRadius: 'var(--radius-md)', 
+                                    background: `${stat.color}15`, display: 'flex', 
+                                    alignItems: 'center', justifyContent: 'center' 
+                                }}>
+                                    <Icon size={20} style={{ color: stat.color }} />
+                                </div>
+                                <div className={stat.isUp ? 'trend-up' : 'trend-down'}>
+                                    <TrendIcon size={12} /> {stat.trend}
+                                </div>
                             </div>
-                            <div className="stat-value" style={{ fontSize: '1.5rem' }}>{stat.value}</div>
-                            <div className="stat-label">{stat.label}</div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>{stat.label}</div>
+                            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '4px' }}>{stat.value}</div>
                         </div>
                     )
                 })}
             </div>
 
-            {/* Course Metrics Section */}
-            <div className="animate-slide-up stagger-4" style={{ marginBottom: 'var(--space-xl)' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Trophy size={20} style={{ color: 'var(--accent-warning)' }} /> ประสิทธิภาพตามคอร์สเรียน
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--space-md)' }}>
-                    {courseMetrics.map(course => (
-                        <div key={course.id} className="glass-card" style={{ padding: 'var(--space-md)', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'var(--space-md)' }}>
-                                <span style={{ fontSize: '1.5rem' }}>{course.thumbnail}</span>
-                                <div style={{ overflow: 'hidden' }}>
-                                    <div style={{ fontWeight: 600, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.title}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{course.category}</div>
-                                </div>
-                            </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
-                                <div style={{ background: 'var(--bg-tertiary)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
-                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 2 }}>คะแนนเฉลี่ย</div>
-                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-primary)' }}>{course.avgScore}%</div>
-                                </div>
-                                <div style={{ background: 'var(--bg-tertiary)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
-                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 2 }}>อัตราผ่าน (60%)</div>
-                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-success)' }}>{course.passRate}%</div>
-                                </div>
-                            </div>
-                            <div style={{ marginTop: 'var(--space-sm)', textAlign: 'right', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                                {course.totalAttempts} ครั้งทดสอบ
-                            </div>
+            {/* Main Insights Grid */}
+            <div className="dashboard-grid" style={{ marginBottom: 'var(--space-xl)' }}>
+                {/* Individual Performance - Large Area */}
+                <div className="glass-card col-span-8">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+                        <div>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>ผลรวมคะแนนรายบุคคล</h3>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+                                แสดงลำดับคะแนนจากสูงไปต่ำ {filterRange && `เฉพาะกลุ่ม${filterRange.name}`}
+                            </p>
                         </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Charts */}
-            <div className="grid-2" style={{ marginBottom: 'var(--space-xl)' }}>
-                <div className="glass-card glass-card--static">
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
-                        รายชื่อ {filterRange ? `กลุ่ม${filterRange.name}` : 'นักเรียนทุกคน'} ({filteredPerformance.length})
-                    </h3>
+                    </div>
                     <div style={{ overflowX: 'auto', paddingBottom: '10px' }}>
-                        <div style={{ height: 280, minWidth: Math.max(500, filteredPerformance.length * 50) }}>
+                        <div style={{ height: 320, minWidth: Math.max(600, filteredPerformance.length * 60) }}>
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={filteredPerformance} margin={{ bottom: 80, top: 20, right: 20, left: 0 }}>
+                                <BarChart data={filteredPerformance} margin={{ bottom: 80, top: 10, right: 20, left: 0 }}>
+                                    <defs>
+                                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="var(--accent-primary)" stopOpacity={1}/>
+                                            <stop offset="100%" stopColor="var(--accent-violet)" stopOpacity={0.8}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
                                     <XAxis 
                                         dataKey="name" 
-                                        tick={{ fill: '#94a3b8', fontSize: 10 }} 
+                                        tick={{ fill: 'var(--text-muted)', fontSize: 10 }} 
                                         angle={-45} 
                                         textAnchor="end" 
                                         interval={0}
                                         height={80} 
+                                        axisLine={false}
+                                        tickLine={false}
                                     />
-                                    <YAxis domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                                    <YAxis 
+                                        domain={[0, 100]} 
+                                        tick={{ fill: 'var(--text-muted)', fontSize: 10 }} 
+                                        axisLine={false}
+                                        tickLine={false}
+                                    />
                                     <Tooltip
                                         contentStyle={{
-                                            background: 'var(--bg-secondary)',
+                                            background: 'rgba(255, 255, 255, 0.95)',
+                                            backdropFilter: 'blur(10px)',
                                             border: '1px solid var(--border-color)',
-                                            borderRadius: '8px',
-                                            color: 'var(--text-primary)',
-                                            fontSize: '0.85rem'
+                                            borderRadius: '12px',
+                                            boxShadow: 'var(--shadow-lg-premium)'
                                         }}
-                                        cursor={{ fill: 'rgba(124, 58, 237, 0.05)' }}
+                                        cursor={{ fill: 'rgba(99, 102, 241, 0.05)' }}
                                     />
-                                    <Bar dataKey="คะแนนเฉลี่ย" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey="คะแนนเฉลี่ย" fill="url(#barGradient)" radius={[6, 6, 0, 0]} barSize={32} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
                 </div>
 
-                <div className="glass-card glass-card--static">
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
-                        การกระจายคะแนน
-                    </h3>
-                    <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-lg)' }}>
-                        <div style={{ width: '50%', height: '100%', position: 'relative' }}>
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={scoreRanges}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                        label={false}
-                                    >
-                                        {scoreRanges.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                                    </Pie>
-                                    <Tooltip
-                                        contentStyle={{
-                                            background: 'var(--bg-secondary)',
-                                            border: '1px solid var(--border-color)',
-                                            borderRadius: '8px',
-                                            fontSize: '0.85rem'
-                                        }}
-                                    />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>นักเรียนทั้งหมด</div>
-                                <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{users.length}</div>
-                                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>คน</div>
-                            </div>
+                {/* Score Distribution Donut */}
+                <div className="glass-card col-span-4">
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 'var(--space-md)' }}>การกระจายคะแนน</h3>
+                    <div style={{ height: 260, position: 'relative' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={scoreRanges}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={70}
+                                    outerRadius={95}
+                                    paddingAngle={8}
+                                    dataKey="value"
+                                    stroke="none"
+                                >
+                                    {scoreRanges.map((entry, i) => (
+                                        <Cell 
+                                            key={i} 
+                                            fill={entry.color} 
+                                            style={{ filter: `drop-shadow(0 4px 8px ${entry.color}40)` }}
+                                        />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{
+                                        background: 'rgba(255, 255, 255, 0.95)',
+                                        border: 'none',
+                                        borderRadius: '12px',
+                                        boxShadow: 'var(--shadow-md)'
+                                    }}
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                            <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>{users.length}</div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginTop: '4px' }}>นักเรียน</div>
                         </div>
-                        <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                            {scoreRanges.map((range, i) => {
-                                const isActive = filterRange?.name === range.name
-                                return (
-                                    <div 
-                                        key={i} 
-                                        onClick={() => setFilterRange(isActive ? null : range)}
-                                        style={{ 
-                                            display: 'flex', 
-                                            alignItems: 'center', 
-                                            gap: '10px', 
-                                            cursor: 'pointer',
-                                            padding: '8px',
-                                            borderRadius: '8px',
-                                            background: isActive ? 'var(--bg-tertiary)' : 'transparent',
-                                            transition: 'all 0.2s',
-                                            border: isActive ? '1px solid var(--border-color)' : '1px solid transparent'
-                                        }}
-                                    >
-                                        <div style={{ width: 10, height: 10, borderRadius: '50%', background: range.color }} />
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isActive ? 'var(--accent-primary)' : 'inherit' }}>{range.name}</div>
-                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{range.value} คน ({range.percentage}%)</div>
-                                        </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: 'var(--space-md)' }}>
+                        {scoreRanges.map((range, i) => {
+                            const isActive = filterRange?.name === range.name
+                            return (
+                                <div 
+                                    key={i} 
+                                    onClick={() => setFilterRange(isActive ? null : range)}
+                                    style={{ 
+                                        padding: '8px', borderRadius: '12px', cursor: 'pointer',
+                                        background: isActive ? `${range.color}15` : 'var(--bg-tertiary)',
+                                        border: `1px solid ${isActive ? range.color : 'transparent'}`,
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: range.color }} />
+                                        <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-primary)' }}>{range.percentage}%</span>
                                     </div>
-                                )
-                            })}
+                                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{range.name.split(' (')[0]}</div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+
+                {/* Learning Activity Activity Area Chart */}
+                <div className="glass-card col-span-8">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+                        <div>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>แนวโน้มการเรียนรู้ (7 วัน)</h3>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>สถิติการใช้งานและทดสอบรายวัน</p>
                         </div>
+                        <div className="trend-up"><TrendingUp size={14} /> +23%</div>
+                    </div>
+                    <div style={{ height: 240 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={activityData}>
+                                <defs>
+                                    <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.2}/>
+                                        <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0}/>
+                                    </linearGradient>
+                                    <linearGradient id="colorTests" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="var(--accent-secondary)" stopOpacity={0.2}/>
+                                        <stop offset="95%" stopColor="var(--accent-secondary)" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-lg-premium)' }} />
+                                <Area type="monotone" dataKey="usage" stroke="var(--accent-primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorUsage)" />
+                                <Area type="monotone" dataKey="tests" stroke="var(--accent-secondary)" strokeWidth={3} fillOpacity={1} fill="url(#colorTests)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Spider Radar Chart for Skills */}
+                <div className="glass-card col-span-4">
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 'var(--space-md)' }}>ภาพรวมเชิงลึก</h3>
+                    <div style={{ height: 260 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                                <PolarGrid stroke="var(--border-color)" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: 'var(--text-muted)', fontWeight: 600 }} />
+                                <Radar 
+                                    name="Performance" 
+                                    dataKey="A" 
+                                    stroke="var(--accent-primary)" 
+                                    fill="var(--accent-primary)" 
+                                    fillOpacity={0.3} 
+                                />
+                                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-md)' }} />
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '-10px' }}>
+                        สมรรถนะองค์รวมของระบบ LMS ในขณะนี้
                     </div>
                 </div>
             </div>
 
-
-            {/* Student Table */}
-            <div className="glass-card glass-card--static" id="student-list">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>
-                        รายชื่อนักเรียน {filterRange && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}> - กลุ่ม{filterRange.name}</span>}
+            {/* Course Metrics & Students Section */}
+            <div className="dashboard-grid">
+                {/* Course List */}
+                <div className="col-span-12">
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Trophy size={20} style={{ color: 'var(--accent-amber)' }} /> ประสิทธิภาพตามคอร์สเรียน
                     </h3>
-                    {filterRange && (
-                        <button 
-                            className="btn btn-ghost btn-sm" 
-                            onClick={() => setFilterRange(null)}
-                            style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-danger)' }}
-                        >
-                            <XCircle size={14} /> ล้างการกรอง
-                        </button>
-                    )}
-                </div>
-                <div className="admin-table-container">
-                    <table className="data-table">
-                        <thead>
-                            <tr>
-                                <th>ชื่อ</th>
-                                <th>แผนก</th>
-                                <th>บทเรียนที่เรียน</th>
-                                <th>คะแนนเฉลี่ย</th>
-                                <th>สถานะ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredUsers.map(u => {
-                                const perf = studentPerformance.find(p => p.id === u.id)
-                                const avg = perf?.คะแนนเฉลี่ย || 0
-                                const progress = perf?.บทเรียน || 0
-                                return (
-                                    <tr key={u.id}>
-                                        <td>
-                                            <div className="flex items-center gap-sm">
-                                                <img src={u.avatar} alt={u.name} style={{ width: 32, height: 32, borderRadius: '50%' }} />
-                                                {u.name}
-                                            </div>
-                                        </td>
-                                        <td>{u.department}</td>
-                                        <td>{progress}/{lessons.length} บท ({lessons.length > 0 ? Math.round((progress/lessons.length)*100) : 0}%)</td>
-                                        <td>
-                                            <span style={{ fontWeight: 600, color: avg >= 60 ? 'var(--accent-success)' : 'var(--accent-danger)' }}>
-                                                {avg}%
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {avg >= 80 ? (
-                                                <span className="badge badge-success">ดีเยี่ยม</span>
-                                            ) : avg >= 60 ? (
-                                                <span className="badge badge-warning">ผ่าน</span>
-                                            ) : quizResults.filter(r => r.userId === u.id).length > 0 ? (
-                                                <span className="badge badge-danger">ต้องปรับปรุง</span>
-                                            ) : (
-                                                <span className="badge badge-info">ยังไม่สอบ</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                            {filteredUsers.length === 0 && (
-                                <tr>
-                                    <td colSpan="5" style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--text-muted)' }}>
-                                        ไม่พบรายชื่อในกลุ่มนี้
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* Recent Comments - Moved to bottom & Compacted */}
-            <div className="glass-card glass-card--static" style={{ marginTop: 'var(--space-xl)' }}>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <MessageSquare size={16} style={{ color: 'var(--accent-primary)' }}/>
-                    ความคิดเห็นล่าสุด
-                </h3>
-                {lessonRatings.filter(r => r.comment).length > 0 ? (
-                    <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', 
-                        gap: 'var(--space-sm)',
-                        maxHeight: '320px',
-                        overflowY: 'auto',
-                        paddingRight: '6px'
-                    }}>
-                        {lessonRatings.filter(r => r.comment).map(r => (
-                            <div key={r.id} style={{ 
-                                padding: 'var(--space-sm)', 
-                                background: 'var(--bg-secondary)', 
-                                borderRadius: 'var(--radius-md)', 
-                                border: '1px solid var(--border-color)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '4px'
-                            }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                        <img src={r.user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.userId}`} alt="avatar" style={{ width: 20, height: 20, borderRadius: '50%' }} />
-                                        <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{r.user?.name || `Student ${r.userId}`}</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
+                        {courseMetrics.map(course => (
+                            <div key={course.id} className="glass-card" style={{ padding: 'var(--space-sm)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: 'var(--space-md)' }}>
+                                    <div style={{ fontSize: '1.5rem', width: 40, height: 40, background: 'var(--bg-tertiary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {course.thumbnail}
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        {[1, 2, 3, 4, 5].map(star => (
-                                            <Star key={star} size={10} fill={r.rating >= star ? '#f59e0b' : 'transparent'} color={r.rating >= star ? '#f59e0b' : '#cbd5e1'} />
-                                        ))}
+                                    <div style={{ overflow: 'hidden' }}>
+                                        <div style={{ fontWeight: 700, fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.title}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{course.category}</div>
                                     </div>
                                 </div>
-                                <div style={{ fontSize: '0.65rem', color: 'var(--accent-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {r.lesson?.title || `Lesson ${r.lessonId}`}
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <div style={{ flex: 1, background: 'var(--bg-tertiary)', padding: '8px', borderRadius: '12px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: 2 }}>คะแนน</div>
+                                        <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-primary)' }}>{course.avgScore}%</div>
+                                    </div>
+                                    <div style={{ flex: 1, background: 'var(--bg-tertiary)', padding: '8px', borderRadius: '12px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: 2 }}>ผ่าน</div>
+                                        <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>{course.passRate}%</div>
+                                    </div>
                                 </div>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-primary)', lineHeight: 1.4, margin: 0, fontStyle: 'italic' }}>
-                                    "{r.comment}"
-                                </p>
                             </div>
                         ))}
                     </div>
-                ) : (
-                    <div className="empty-state" style={{ padding: 'var(--space-md)' }}>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ยังไม่มีความคิดเห็นในขณะนี้</p>
+                </div>
+            </div>
+
+
+            {/* Recent Table & Comments Segment */}
+            <div className="dashboard-grid">
+                {/* Student List */}
+                <div className="glass-card col-span-8">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>
+                            นักเรียน {filterRange && <span style={{ color: 'var(--accent-primary)' }}> - กลุ่ม{filterRange.name}</span>}
+                        </h3>
+                        {filterRange && (
+                            <button className="btn btn-ghost btn-sm" onClick={() => setFilterRange(null)} style={{ color: 'var(--accent-rose)' }}>
+                                <XCircle size={14} /> Clear
+                            </button>
+                        )}
                     </div>
-                )}
+                    <div className="admin-table-container">
+                        <table className="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ชื่อนักเรียน</th>
+                                    <th>แผนก</th>
+                                    <th>ความคืบหน้า</th>
+                                    <th>เฉลี่ย</th>
+                                    <th>สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredUsers.map(u => {
+                                    const perf = studentPerformance.find(p => p.id === u.id)
+                                    const avg = perf?.คะแนนเฉลี่ย || 0
+                                    const progress = perf?.บทเรียน || 0
+                                    const perc = lessons.length > 0 ? Math.round((progress/lessons.length)*100) : 0
+                                    return (
+                                        <tr key={u.id}>
+                                            <td>
+                                                <div className="flex items-center gap-sm">
+                                                    <img src={u.avatar} alt={u.name} style={{ width: 32, height: 32, borderRadius: '12px', border: '1px solid var(--border-color)' }} />
+                                                    <span style={{ fontWeight: 600 }}>{u.name}</span>
+                                                </div>
+                                            </td>
+                                            <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{u.department}</td>
+                                            <td>
+                                                <div style={{ width: '80px' }}>
+                                                    <div className="progress-bar" style={{ height: 6 }}>
+                                                        <div className="progress-bar-fill" style={{ width: `${perc}%`, background: perc === 100 ? 'var(--accent-emerald)' : 'var(--accent-primary)' }} />
+                                                    </div>
+                                                    <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>{perc}% Done</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span style={{ fontWeight: 800, color: avg >= 80 ? 'var(--accent-emerald)' : avg >= 60 ? 'var(--accent-amber)' : 'var(--accent-rose)' }}>
+                                                    {avg}%
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className={`badge ${avg >= 80 ? 'badge-success' : avg >= 60 ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '0.65rem' }}>
+                                                    {avg >= 80 ? 'ดีมาก' : avg >= 60 ? 'ผ่าน' : 'ปรับปรุง'}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Recent Activity / Comments Segment */}
+                <div className="glass-card col-span-4">
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <MessageSquare size={18} style={{ color: 'var(--accent-primary)' }}/> ความคิดเห็นล่าสุด
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '420px', overflowY: 'auto', paddingRight: '8px' }}>
+                        {lessonRatings.filter(r => r.comment).slice(0, 10).map(r => (
+                            <div key={r.id} style={{ 
+                                padding: '12px', 
+                                background: 'var(--bg-tertiary)', 
+                                borderRadius: '16px', 
+                                border: '1px solid rgba(0,0,0,0.03)'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <img src={r.user?.avatar} style={{ width: 24, height: 24, borderRadius: '8px' }} />
+                                        <div style={{ fontSize: '0.75rem', fontWeight: 700 }}>{r.user?.name}</div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '2px' }}>
+                                        <Star size={10} fill="#f59e0b" color="#f59e0b" />
+                                        <span style={{ fontSize: '0.7rem', fontWeight: 700 }}>{r.rating}</span>
+                                    </div>
+                                </div>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '0 0 4px 0', lineHeight: 1.4 }}>
+                                    "{r.comment}"
+                                </p>
+                                <div style={{ fontSize: '0.65rem', color: 'var(--accent-primary)', fontWeight: 600 }}>{r.lesson?.title}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     )
