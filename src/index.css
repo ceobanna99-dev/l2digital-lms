@@ -69,9 +69,27 @@
   --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* Text Colors */
+  --text-primary: #1e293b;      /* Slate 800 */
+  --text-secondary: #475569;    /* Slate 600 */
+  --text-muted: #94a3b8;       /* Slate 400 */
+  --text-on-accent: #ffffff;
+
+  /* Borders & Dividers */
+  --border-color: #e2e8f0;
+  --border-color-hover: #cbd5e1;
+
   /* Layout */
   --sidebar-width: 270px;
   --header-height: 68px;
+
+  /* Additional Gradients */
+  --gradient-primary: var(--gradient-premium);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-danger: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  --gradient-hero: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #8b5cf6 100%);
+  --gradient-sidebar: linear-gradient(180deg, #1e1e3a 0%, #111122 100%);
 }
 
 /* ---------- Base Styles ---------- */
@@ -1302,6 +1320,7 @@ select {
   flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
