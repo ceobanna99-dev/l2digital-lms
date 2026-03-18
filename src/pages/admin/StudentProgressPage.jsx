@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../config/supabaseClient'
-import { Search, ChevronDown, ChevronUp, Trophy, BookOpen, FileQuestion, Plus, X, Upload, Download } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, Trophy, BookOpen, FileQuestion, Plus, X, Upload, Download, FileText } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function StudentProgressPage() {
@@ -28,6 +28,8 @@ export default function StudentProgressPage() {
     const [editStudent, setEditStudent] = useState(null)
     const [editError, setEditError] = useState('')
     const [importing, setImporting] = useState(false)
+    const [showExportMenu, setShowExportMenu] = useState(false)
+    const exportMenuRef = useRef(null)
 
     // Fetch initial data
     useEffect(() => {
@@ -123,21 +125,73 @@ export default function StudentProgressPage() {
         }
     }
 
-    const handleExportCSV = () => {
-        if (students.length === 0) return
-        
-        const headers = ['รหัสพนักงาน', 'ชื่อ-นามสกุล', 'อีเมล', 'แผนก', 'รหัสผ่าน']
-        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
-            + headers.join(",") + "\n"
-            + students.map(s => `"${s.employeeId || ''}","${s.name}","${s.email || ''}","${s.department}",""`).join("\n")
-            
-        const encodedUri = encodeURI(csvContent)
+    const downloadCSV = (csvContent, filename) => {
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
         const link = document.createElement("a")
-        link.setAttribute("href", encodedUri)
-        link.setAttribute("download", "students.csv")
+        link.setAttribute("href", url)
+        link.setAttribute("download", filename)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+    }
+
+    const handleExportStudentList = () => {
+        if (students.length === 0) return
+        setShowExportMenu(false)
+        const headers = ['รหัสพนักงาน', 'ชื่อ-นามสกุล', 'อีเมล', 'แผนก']
+        const rows = students.map(s =>
+            `"${s.employeeId || ''}","${s.name}","${s.email || ''}","${s.department}"`
+        )
+        downloadCSV(headers.join(',') + '\n' + rows.join('\n'), 'students.csv')
+    }
+
+    const handleExportLearningResults = () => {
+        if (students.length === 0) return
+        setShowExportMenu(false)
+
+        const totalLessons = lessons.length
+
+        // Build quiz titles map
+        const quizMap = Object.fromEntries(quizzes.map(q => [q.id, q]))
+
+        // Build rows — one row per student
+        const rows = students.map(student => {
+            const results = quizResults.filter(r => r.userId === student.id)
+            const progress = lessonProgress.filter(p => p.userId === student.id)
+            const completedLessons = progress.filter(p => p.completed).length
+            const completionPct = totalLessons > 0 ? Math.round(completedLessons / totalLessons * 100) : 0
+            const avgScore = results.length > 0
+                ? Math.round(results.reduce((a, b) => a + b.score, 0) / results.length)
+                : 0
+            const quizSummary = results.map(r => {
+                const q = quizMap[r.quizId]
+                const passed = r.score >= (q?.passingScore || 60)
+                return `${q?.title || 'Quiz ' + r.quizId}: ${r.score}% (${passed ? 'ผ่าน' : 'ไม่ผ่าน'}) [${new Date(r.completedAt).toLocaleDateString('th-TH')}]`
+            }).join(' | ')
+
+            return [
+                `"${student.employeeId || ''}"`,
+                `"${student.name}"`,
+                `"${student.email || ''}"`,
+                `"${student.department}"`,
+                `"${completedLessons}/${totalLessons}"`,
+                `"${completionPct}%"`,
+                `"${results.length}"`,
+                `"${avgScore}%"`,
+                `"${quizSummary}"`
+            ].join(',')
+        })
+
+        const headers = [
+            'รหัสพนักงาน', 'ชื่อ-นามสกุล', 'อีเมล', 'แผนก',
+            'บทเรียนที่เรียนแล้ว', 'ความคืบหน้า (%)',
+            'จำนวนแบบทดสอบ', 'คะแนนเฉลี่ย', 'รายละเอียดผลสอบ'
+        ]
+
+        const today = new Date().toLocaleDateString('th-TH').replace(/\//g, '-')
+        downloadCSV(headers.join(',') + '\n' + rows.join('\n'), `ผลการเรียนนักเรียน_${today}.csv`)
     }
 
     const handleImportCSV = (e) => {
@@ -237,9 +291,63 @@ export default function StudentProgressPage() {
                     <label htmlFor="csv-upload" className="btn btn-secondary" style={{ cursor: 'pointer', margin: 0 }}>
                         <Upload size={18} /> {importing ? 'กำลังนำเข้า...' : 'นำเข้า (CSV)'}
                     </label>
-                    <button className="btn btn-secondary" onClick={handleExportCSV} disabled={students.length === 0}>
-                        <Download size={18} /> ส่งออก (CSV)
-                    </button>
+                    {/* Export Dropdown */}
+                    <div style={{ position: 'relative' }} ref={exportMenuRef}>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => setShowExportMenu(v => !v)}
+                            disabled={students.length === 0}
+                            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                        >
+                            <Download size={18} /> ส่งออก <ChevronDown size={14} style={{ marginLeft: 2, transition: 'transform 0.2s', transform: showExportMenu ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                        </button>
+                        {showExportMenu && (
+                            <div style={{
+                                position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 100,
+                                background: 'var(--bg-card)', border: '1px solid var(--border-color)',
+                                borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                minWidth: 230, overflow: 'hidden'
+                            }}>
+                                <button
+                                    onClick={handleExportLearningResults}
+                                    style={{
+                                        width: '100%', textAlign: 'left', padding: '10px 16px',
+                                        background: 'transparent', border: 'none', cursor: 'pointer',
+                                        color: 'var(--text-primary)', fontSize: '0.875rem',
+                                        display: 'flex', alignItems: 'center', gap: 10,
+                                        transition: 'background 0.15s'
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    <Trophy size={16} style={{ color: 'var(--accent-primary)' }} />
+                                    <div>
+                                        <div style={{ fontWeight: 600 }}>Export ผลการเรียน</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>คะแนน, ความคืบหน้า, ผลสอบ</div>
+                                    </div>
+                                </button>
+                                <div style={{ height: 1, background: 'var(--border-color)' }} />
+                                <button
+                                    onClick={handleExportStudentList}
+                                    style={{
+                                        width: '100%', textAlign: 'left', padding: '10px 16px',
+                                        background: 'transparent', border: 'none', cursor: 'pointer',
+                                        color: 'var(--text-primary)', fontSize: '0.875rem',
+                                        display: 'flex', alignItems: 'center', gap: 10,
+                                        transition: 'background 0.15s'
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    <FileText size={16} style={{ color: 'var(--text-muted)' }} />
+                                    <div>
+                                        <div style={{ fontWeight: 600 }}>Export รายชื่อนักเรียน</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ชื่อ, อีเมล, แผนก</div>
+                                    </div>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
                         <Plus size={18} /> เพิ่มนักเรียน
                     </button>
