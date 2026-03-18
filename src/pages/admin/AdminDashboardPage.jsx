@@ -476,11 +476,16 @@ export default function AdminDashboardPage() {
                                             </td>
                                             <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{u.department}</td>
                                             <td>
-                                                <div style={{ width: '80px' }}>
-                                                    <div className="progress-bar" style={{ height: 6 }}>
+                                                <div style={{ minWidth: '120px' }}>
+                                                    <div className="progress-bar" style={{ height: 6, marginBottom: '6px' }}>
                                                         <div className="progress-bar-fill" style={{ width: `${perc}%`, background: perc === 100 ? 'var(--accent-emerald)' : 'var(--accent-primary)' }} />
                                                     </div>
-                                                    <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>{perc}% Done</span>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                        <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-primary)' }}>{perc}% สำเร็จ</span>
+                                                        <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>
+                                                            เรียนแล้ว {progress} | ยังไม่เรียน {lessons.length - progress}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>
