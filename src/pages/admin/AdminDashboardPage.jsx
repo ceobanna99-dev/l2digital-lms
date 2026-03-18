@@ -332,7 +332,7 @@ export default function AdminDashboardPage() {
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: range.color }} />
-                                        <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-primary)' }}>{range.percentage}%</span>
+                                        <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-primary)' }}>{range.percentage}% ({range.value} คน)</span>
                                     </div>
                                     <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{range.name.split(' (')[0]}</div>
                                 </div>
