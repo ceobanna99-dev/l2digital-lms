@@ -132,6 +132,11 @@ export default function AdminDashboardPage() {
         })
         : users
 
+    const filteredPerformance = filteredUsers.map(u => {
+        const perf = studentPerformance.find(p => p.id === u.id)
+        return perf || { name: u.name, คะแนนเฉลี่ย: 0, บทเรียน: 0, id: u.id }
+    }).sort((a, b) => b.คะแนนเฉลี่ย - a.คะแนนเฉลี่ย)
+
     return (
         <div className="animate-fade-in">
             <div className="page-header">
@@ -192,25 +197,35 @@ export default function AdminDashboardPage() {
             <div className="grid-2" style={{ marginBottom: 'var(--space-xl)' }}>
                 <div className="glass-card glass-card--static">
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
-                        คะแนนรายบุคคล
+                        รายชื่อ {filterRange ? `กลุ่ม${filterRange.name}` : 'นักเรียนทุกคน'} ({filteredPerformance.length})
                     </h3>
-                    <div style={{ height: 250 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={studentPerformance} margin={{ bottom: 60, top: 20, right: 20, left: 0 }}>
-                                <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} angle={-45} textAnchor="end" height={60} />
-                                <YAxis domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                                <Tooltip
-                                    contentStyle={{
-                                        background: 'var(--bg-secondary)',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '8px',
-                                        color: 'var(--text-primary)',
-                                        fontSize: '0.85rem'
-                                    }}
-                                />
-                                <Bar dataKey="คะแนนเฉลี่ย" fill="#7c3aed" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <div style={{ overflowX: 'auto', paddingBottom: '10px' }}>
+                        <div style={{ height: 280, minWidth: Math.max(500, filteredPerformance.length * 50) }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={filteredPerformance} margin={{ bottom: 80, top: 20, right: 20, left: 0 }}>
+                                    <XAxis 
+                                        dataKey="name" 
+                                        tick={{ fill: '#94a3b8', fontSize: 10 }} 
+                                        angle={-45} 
+                                        textAnchor="end" 
+                                        interval={0}
+                                        height={80} 
+                                    />
+                                    <YAxis domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                                    <Tooltip
+                                        contentStyle={{
+                                            background: 'var(--bg-secondary)',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)',
+                                            fontSize: '0.85rem'
+                                        }}
+                                        cursor={{ fill: 'rgba(124, 58, 237, 0.05)' }}
+                                    />
+                                    <Bar dataKey="คะแนนเฉลี่ย" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
 
