@@ -117,6 +117,7 @@ export default function AdminDashboardPage() {
     const stats = [
         { icon: Users, label: 'นักเรียนทั้งหมด', value: totalStudents, trend: '+12%', isUp: true, color: 'var(--accent-primary)', gradient: 'var(--gradient-premium)' },
         { icon: BookOpen, label: 'คอร์สทั้งหมด', value: courses.length, trend: '+2', isUp: true, color: 'var(--accent-secondary)', gradient: 'var(--gradient-sky)' },
+        { icon: GraduationCap, label: 'เรียนครบแล้ว', value: completedStudentsCount, trend: `/${totalStudents} คน`, isUp: true, color: 'var(--accent-violet)', gradient: 'var(--gradient-premium)' },
         { icon: Zap, label: 'อัตราผ่านประเมิน', value: `${passRate}%`, trend: '+5%', isUp: true, color: 'var(--accent-emerald)', gradient: 'var(--gradient-sky)' },
         { icon: Star, label: 'ความพึงพอใจ', value: `${avgRating}/5`, trend: '-0.1', isUp: false, color: 'var(--accent-rose)', gradient: 'var(--gradient-sunset)' },
     ]
@@ -201,7 +202,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Stats Overview */}
-            <div className="grid-4" style={{ marginBottom: 'var(--space-xl)' }}>
+            <div className="grid-5" style={{ marginBottom: 'var(--space-xl)' }}>
                 {stats.map((stat, i) => {
                     const Icon = stat.icon
                     const TrendIcon = stat.isUp ? ArrowUpRight : ArrowDownRight

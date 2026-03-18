@@ -581,6 +581,18 @@ select {
   gap: var(--space-lg);
 }
 
+.grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-lg);
+}
+
+@media (max-width: 1280px) {
+  .grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 1024px) {
   .grid-4 {
     grid-template-columns: repeat(2, 1fr);
@@ -593,6 +605,7 @@ select {
 
 @media (max-width: 640px) {
 
+  .grid-5,
   .grid-4,
   .grid-3,
   .grid-2 {
