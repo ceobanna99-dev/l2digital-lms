@@ -14,36 +14,49 @@
 
 /* ---------- Custom Properties ---------- */
 :root {
-  /* Colors - Modern Premium Theme */
+  /* Colors - Light Theme (Default) */
   --bg-primary: #f8faff;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
   --bg-card: rgba(255, 255, 255, 0.7);
-  --bg-card-hover: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.9);
   --bg-glass: rgba(255, 255, 255, 0.4);
   --bg-glass-hover: rgba(255, 255, 255, 0.6);
+  
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-on-accent: #ffffff;
+  
+  --border-color: #e2e8f0;
+  --border-color-hover: #cbd5e1;
 
-  /* Accent Colors - Premium Palette */
-  --accent-primary: #6366f1;    /* Indigo */
-  --accent-secondary: #0ea5e9;  /* Sky */
-  --accent-violet: #8b5cf6;     /* Violet */
-  --accent-emerald: #10b981;    /* Emerald */
-  --accent-rose: #f43f5e;       /* Rose */
-  --accent-amber: #f59e0b;      /* Amber */
+  /* Accent Colors */
+  --accent-primary: #6366f1;
+  --accent-secondary: #0ea5e9;
+  --accent-violet: #8b5cf6;
+  --accent-emerald: #10b981;
+  --accent-rose: #f43f5e;
+  --accent-amber: #f59e0b;
 
-  /* Gradients - Deep & Modern */
+  /* Gradients */
   --gradient-premium: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   --gradient-sky: linear-gradient(135deg, #0ea5e9 0%, #2dd4bf 100%);
   --gradient-sunset: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%);
   --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 100%);
+  --gradient-primary: var(--gradient-premium);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-hero: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #8b5cf6 100%);
+  --gradient-sidebar: linear-gradient(180deg, #1e1e3a 0%, #111122 100%);
 
-  /* Shadows - Layered & Soft */
+  /* Shadows */
   --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
   --shadow-lg-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
   --shadow-glow-indigo: 0 0 20px rgba(99, 102, 241, 0.15);
   --shadow-glow-sky: 0 0 20px rgba(14, 165, 233, 0.15);
 
-  /* Spacing */
+  /* Spacing & Misc */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -69,33 +82,42 @@
   --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Text Colors */
-  --text-primary: #1e293b;      /* Slate 800 */
-  --text-secondary: #475569;    /* Slate 600 */
-  --text-muted: #94a3b8;       /* Slate 400 */
-  --text-on-accent: #ffffff;
-
-  /* Borders & Dividers */
-  --border-color: #e2e8f0;
-  --border-color-hover: #cbd5e1;
-
   /* Layout */
   --sidebar-width: 270px;
   --header-height: 68px;
+}
 
-  /* Additional Gradients */
-  --gradient-primary: var(--gradient-premium);
-  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  --gradient-danger: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-  --gradient-hero: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #8b5cf6 100%);
-  --gradient-sidebar: linear-gradient(180deg, #1e1e3a 0%, #111122 100%);
+[data-theme='dark'] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --bg-card-hover: rgba(30, 41, 59, 0.9);
+  --bg-glass: rgba(15, 23, 42, 0.4);
+  --bg-glass-hover: rgba(15, 23, 42, 0.6);
+  
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-on-accent: #ffffff;
+  
+  --border-color: #334155;
+  --border-color-hover: #475569;
+
+  --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  --shadow-lg-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  
+  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  --gradient-sidebar: linear-gradient(180deg, #020617 0%, #0f172a 100%);
 }
 
 /* ---------- Base Styles ---------- */
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 body {
@@ -360,7 +382,7 @@ select {
 .form-input:focus {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  background: white;
+  background: var(--bg-secondary);
 }
 
 .form-input::placeholder {
@@ -387,7 +409,7 @@ select {
   position: relative;
   overflow: hidden;
   padding: var(--space-lg);
-  background: white;
+  background: var(--bg-secondary);
 }
 
 .stat-card .stat-icon {
@@ -595,7 +617,7 @@ select {
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-2xl);
   padding: var(--space-xl);
@@ -1052,7 +1074,7 @@ select {
   display: none;
   width: 40px;
   height: 40px;
-  background: white;
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   color: var(--text-primary);
@@ -1100,9 +1122,9 @@ select {
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-secondary);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-2xl);
   padding: var(--space-2xl);
   animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1150,12 +1172,12 @@ select {
 
 .login-form .form-input {
   padding: 0.875rem 1rem;
-  background: #f8fafc;
+  background: var(--bg-tertiary);
   border: 1.5px solid #e2e8f0;
 }
 
 .login-form .form-input:focus {
-  background: white;
+  background: var(--bg-secondary);
   border-color: var(--accent-primary);
 }
 
@@ -1519,7 +1541,7 @@ select {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  background: #f1f5f9;
+  background: var(--bg-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2397,7 +2419,7 @@ select {
 }
 
 .course-sidebar-card {
-  background: white;
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   overflow: hidden;

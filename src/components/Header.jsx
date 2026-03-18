@@ -1,10 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { BookOpen, LayoutDashboard, FileText, Users, ClipboardList, LogOut, Menu, X, Bell, ChevronDown, User } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
+import { BookOpen, LayoutDashboard, FileText, Users, ClipboardList, LogOut, Menu, X, Bell, ChevronDown, User, Sun, Moon } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Header() {
     const { user, logout } = useAuth()
+    const { theme, toggleTheme } = useTheme()
     const navigate = useNavigate()
     const [mobileOpen, setMobileOpen] = useState(false)
     const [profileOpen, setProfileOpen] = useState(false)
@@ -51,6 +53,10 @@ export default function Header() {
 
                     {/* Right Side */}
                     <div className="top-nav-right">
+                        <button className="top-nav-icon-btn" onClick={toggleTheme} title={theme === 'light' ? 'เปิดโหมดมืด' : 'เปิดโหมดสว่าง'}>
+                            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                        </button>
+                        
                         <button className="top-nav-icon-btn">
                             <Bell size={18} />
                         </button>
