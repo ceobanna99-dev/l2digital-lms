@@ -25,7 +25,7 @@ export default function AdminDashboardPage() {
                 ] = await Promise.all([
                     supabase.from('users').select('*').eq('role', 'student'),
                     supabase.from('courses').select('*'),
-                    supabase.from('quizResults').select('*'),
+                    supabase.from('quizResults').select('*, quiz:quizzes(*)'),
                     supabase.from('lessonProgress').select('*'),
                     // Using Supabase joins for ratings: we'll get user and lesson info
                     supabase.from('lessonRatings')
@@ -76,10 +76,25 @@ export default function AdminDashboardPage() {
         { icon: Users, label: 'นักเรียนทั้งหมด', value: totalStudents, color: '#7c3aed' },
         { icon: BookOpen, label: 'คอร์สทั้งหมด', value: courses.length, color: '#06b6d4' },
         { icon: GraduationCap, label: 'เรียนจบแล้ว', value: completedStudentsCount, color: '#3b82f6' },
-        { icon: TrendingUp, label: 'คะแนนเฉลี่ย', value: `${avgScore}%`, color: '#f59e0b' },
-        { icon: Trophy, label: 'อัตราผ่าน', value: `${passRate}%`, color: '#10b981' },
-        { icon: Star, label: 'ความพึงพอใจ', value: `${avgRating}/5`, color: '#ec4899' },
+        { icon: Star, label: 'ความพึงพอใจโดยรวม', value: `${avgRating}/5`, color: '#ec4899' },
     ]
+
+    // Per-course performance metrics
+    const courseMetrics = courses.map(c => {
+        const results = quizResults.filter(r => r.quiz?.courseId === c.id)
+        const avgScore = results.length > 0
+            ? Math.round(results.reduce((a, b) => a + b.score, 0) / results.length)
+            : 0
+        const passRate = results.length > 0
+            ? Math.round((results.filter(r => r.score >= 60).length / results.length) * 100)
+            : 0
+        return {
+            ...c,
+            avgScore,
+            passRate,
+            totalAttempts: results.length
+        }
+    })
 
     // Score distribution for pie chart
     const scoreRanges = [
@@ -107,7 +122,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Stats */}
-            <div className="stats-grid">
+            <div className="stats-grid" style={{ marginBottom: 'var(--space-lg)' }}>
                 {stats.map((stat, i) => {
                     const Icon = stat.icon
                     return (
@@ -115,11 +130,44 @@ export default function AdminDashboardPage() {
                             <div className="stat-icon" style={{ background: `${stat.color}20` }}>
                                 <Icon size={24} style={{ color: stat.color }} />
                             </div>
-                            <div className="stat-value">{stat.value}</div>
+                            <div className="stat-value" style={{ fontSize: '1.5rem' }}>{stat.value}</div>
                             <div className="stat-label">{stat.label}</div>
                         </div>
                     )
                 })}
+            </div>
+
+            {/* Course Metrics Section */}
+            <div className="animate-slide-up stagger-4" style={{ marginBottom: 'var(--space-xl)' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Trophy size={20} style={{ color: 'var(--accent-warning)' }} /> ประสิทธิภาพตามคอร์สเรียน
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--space-md)' }}>
+                    {courseMetrics.map(course => (
+                        <div key={course.id} className="glass-card" style={{ padding: 'var(--space-md)', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'var(--space-md)' }}>
+                                <span style={{ fontSize: '1.5rem' }}>{course.thumbnail}</span>
+                                <div style={{ overflow: 'hidden' }}>
+                                    <div style={{ fontWeight: 600, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.title}</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{course.category}</div>
+                                </div>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)' }}>
+                                <div style={{ background: 'var(--bg-tertiary)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 2 }}>คะแนนเฉลี่ย</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-primary)' }}>{course.avgScore}%</div>
+                                </div>
+                                <div style={{ background: 'var(--bg-tertiary)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 2 }}>อัตราผ่าน (60%)</div>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-success)' }}>{course.passRate}%</div>
+                                </div>
+                            </div>
+                            <div style={{ marginTop: 'var(--space-sm)', textAlign: 'right', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                                {course.totalAttempts} ครั้งทดสอบ
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Charts */}
