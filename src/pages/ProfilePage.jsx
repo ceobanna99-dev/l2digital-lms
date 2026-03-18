@@ -51,7 +51,7 @@ export default function ProfilePage() {
             setMessage({ type: 'success', text: 'อัพโหลดรูปโปรไฟล์เรียบร้อยแล้ว' })
         } catch (err) {
             console.error(err)
-            setMessage({ type: 'error', text: 'เกิดข้อผิดพลาดในการอัพโหลดรูป' })
+            setMessage({ type: 'error', text: `เกิดข้อผิดพลาด: ${err.message || 'ไม่สามารถอัพโหลดรูปได้'}` })
         } finally {
             setUploading(false)
         }
