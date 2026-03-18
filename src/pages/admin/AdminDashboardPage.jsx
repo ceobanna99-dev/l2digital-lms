@@ -133,7 +133,12 @@ export default function AdminDashboardPage() {
 
     // Per-course performance metrics
     const courseMetrics = courses.map(c => {
-        const results = quizResults.filter(r => r.quiz?.courseId === c.id)
+        // Filter results that belong to this course by looking up the quiz
+        const results = quizResults.filter(r => {
+            const quiz = quizzes.find(q => q.id === r.quizId)
+            return quiz?.courseId === c.id
+        })
+        
         const avgScore = results.length > 0
             ? Math.round(results.reduce((a, b) => a + b.score, 0) / results.length)
             : 0
