@@ -282,50 +282,6 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            {/* Recent Comments */}
-            <div className="glass-card glass-card--static" style={{ marginBottom: 'var(--space-xl)' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <MessageSquare size={18} style={{ color: 'var(--accent-primary)' }}/>
-                    ความคิดเห็นล่าสุดจากนักเรียน
-                </h3>
-                {lessonRatings.filter(r => r.comment).length > 0 ? (
-                    <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-                        gap: 'var(--space-md)',
-                        maxHeight: '400px',
-                        overflowY: 'auto',
-                        paddingRight: '8px'
-                    }}>
-                        {lessonRatings.filter(r => r.comment).map(r => (
-                            <div key={r.id} style={{ padding: 'var(--space-md)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-sm)' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <img src={r.user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.userId}`} alt="avatar" style={{ width: 24, height: 24, borderRadius: '50%' }} />
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{r.user?.name || `Student ${r.userId}`}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        {[1, 2, 3, 4, 5].map(star => (
-                                            <Star key={star} size={12} fill={r.rating >= star ? '#f59e0b' : 'transparent'} color={r.rating >= star ? '#f59e0b' : '#cbd5e1'} />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', marginBottom: '0.25rem' }}>
-                                    บทเรียน: {r.lesson?.title || `Lesson ${r.lessonId}`}
-                                </div>
-                                <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
-                                    "{r.comment}"
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="empty-state">
-                        <MessageSquare size={32} style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-sm)', opacity: 0.5 }} />
-                        <p>ยังไม่มีความคิดเห็นในขณะนี้</p>
-                    </div>
-                )}
-            </div>
 
             {/* Student Table */}
             <div className="glass-card glass-card--static" id="student-list">
@@ -398,6 +354,58 @@ export default function AdminDashboardPage() {
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            {/* Recent Comments - Moved to bottom & Compacted */}
+            <div className="glass-card glass-card--static" style={{ marginTop: 'var(--space-xl)' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <MessageSquare size={16} style={{ color: 'var(--accent-primary)' }}/>
+                    ความคิดเห็นล่าสุด
+                </h3>
+                {lessonRatings.filter(r => r.comment).length > 0 ? (
+                    <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', 
+                        gap: 'var(--space-sm)',
+                        maxHeight: '320px',
+                        overflowY: 'auto',
+                        paddingRight: '6px'
+                    }}>
+                        {lessonRatings.filter(r => r.comment).map(r => (
+                            <div key={r.id} style={{ 
+                                padding: 'var(--space-sm)', 
+                                background: 'var(--bg-secondary)', 
+                                borderRadius: 'var(--radius-md)', 
+                                border: '1px solid var(--border-color)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '4px'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <img src={r.user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${r.userId}`} alt="avatar" style={{ width: 20, height: 20, borderRadius: '50%' }} />
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{r.user?.name || `Student ${r.userId}`}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        {[1, 2, 3, 4, 5].map(star => (
+                                            <Star key={star} size={10} fill={r.rating >= star ? '#f59e0b' : 'transparent'} color={r.rating >= star ? '#f59e0b' : '#cbd5e1'} />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{ fontSize: '0.65rem', color: 'var(--accent-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {r.lesson?.title || `Lesson ${r.lessonId}`}
+                                </div>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-primary)', lineHeight: 1.4, margin: 0, fontStyle: 'italic' }}>
+                                    "{r.comment}"
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="empty-state" style={{ padding: 'var(--space-md)' }}>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>ยังไม่มีความคิดเห็นในขณะนี้</p>
+                    </div>
+                )}
             </div>
         </div>
     )
