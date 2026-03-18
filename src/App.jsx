@@ -7,6 +7,7 @@ import CourseDetailPage from './pages/CourseDetailPage'
 import LessonPage from './pages/LessonPage'
 import QuizPage from './pages/QuizPage'
 import QuizResultPage from './pages/QuizResultPage'
+import ProfilePage from './pages/ProfilePage'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import ContentManagerPage from './pages/admin/ContentManagerPage'
 import QuizManagerPage from './pages/admin/QuizManagerPage'
@@ -41,6 +42,7 @@ function AppRoutes() {
                 <Route path="lessons/:id" element={<LessonPage />} />
                 <Route path="quiz/:id" element={<QuizPage />} />
                 <Route path="quiz-result/:id" element={<QuizResultPage />} />
+                <Route path="profile" element={<ProfilePage />} />
 
                 {/* Admin Routes */}
                 <Route path="admin" element={<ProtectedRoute adminOnly><AdminDashboardPage /></ProtectedRoute>} />

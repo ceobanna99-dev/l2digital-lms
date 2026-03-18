@@ -39,7 +39,7 @@ export default function LessonPage() {
 
                 const [
                     { data: allLessonsData },
-                    { data: progressData },
+                    { data: progressData, error: progressError },
                     { data: ratingData },
                     { data: quizzesData },
                     { data: quizResultsData }
@@ -52,7 +52,25 @@ export default function LessonPage() {
                 ])
 
                 setAllLessons(allLessonsData || [])
-                setProgress(progressData && progressData.length > 0 ? progressData[0] : null)
+                
+                // Track lesson access (Usage) if not already exists
+                if (progressData && progressData.length > 0) {
+                    setProgress(progressData[0])
+                } else if (!progressError) {
+                    // Create initial progress record to track "Usage"
+                    const { data: newProgress } = await supabase
+                        .from('lessonProgress')
+                        .insert([{
+                            userId: user.id,
+                            lessonId: parseInt(id),
+                            completed: false
+                        }])
+                        .select()
+                    
+                    if (newProgress && newProgress.length > 0) {
+                        setProgress(newProgress[0])
+                    }
+                }
                 
                 // Check if all quizzes for this lesson are passed
                 const quizzes = quizzesData || []

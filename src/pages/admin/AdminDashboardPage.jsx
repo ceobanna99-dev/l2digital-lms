@@ -16,49 +16,85 @@ export default function AdminDashboardPage() {
     const [lessonRatings, setLessonRatings] = useState([])
     const [loading, setLoading] = useState(true)
     const [lessons, setLessons] = useState([])
+    const [quizzes, setQuizzes] = useState([])
+    const [activityData, setActivityData] = useState([])
     const [filterRange, setFilterRange] = useState(null)
 
     useEffect(() => {
-        const fetchAdminData = async () => {
+        const loadData = async () => {
             try {
                 const [
-                    { data: u },
-                    { data: c },
+                    { data: u }, 
+                    { data: c }, 
+                    { data: l }, 
+                    { data: qz }, 
                     { data: qr },
                     { data: lp },
-                    { data: lr },
-                    { data: l }
+                    { data: ratings }
                 ] = await Promise.all([
                     supabase.from('users').select('*').eq('role', 'student'),
                     supabase.from('courses').select('*'),
-                    supabase.from('quizResults').select('*, quiz:quizzes(*)'),
+                    supabase.from('lessons').select('*'),
+                    supabase.from('quizzes').select('*'),
+                    supabase.from('quizResults').select('*'),
                     supabase.from('lessonProgress').select('*'),
-                    // Using Supabase joins for ratings: we'll get user and lesson info
-                    supabase.from('lessonRatings')
-                        .select(`
-                            *,
-                            user:users(*),
-                            lesson:lessons(*)
-                        `)
-                        .order('createdAt', { ascending: false }),
-                    supabase.from('lessons').select('*')
+                    supabase.from('lessonRatings').select('*, user:users(*), lesson:lessons(*)').order('createdAt', { ascending: false })
                 ])
 
                 setUsers(u || [])
                 setCourses(c || [])
+                setLessons(l || [])
+                setQuizzes(qz || [])
                 setQuizResults(qr || [])
                 setLessonProgress(lp || [])
-                setLessonRatings(lr || [])
-                setLessons(l || [])
+                setLessonRatings(ratings || [])
+
+                // Process activity chart data (Last 7 days)
+                processTrendData(lp || [], qr || [])
+
             } catch (err) {
-                console.error("Error loading admin dashboard:", err)
+                console.error("Dashboard error:", err)
             } finally {
                 setLoading(false)
             }
         }
-
-        fetchAdminData()
+        loadData()
     }, [])
+
+    const processTrendData = (lp, qr) => {
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        const last7Days = []
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date()
+            date.setDate(date.getDate() - i)
+            last7Days.push({
+                fullDate: date.toISOString().split('T')[0],
+                name: days[date.getDay()],
+                usage: 0,
+                tests: 0
+            })
+        }
+
+        // Count "Usage" (Started or Completed Lessons)
+        lp.forEach(p => {
+            const dateStr = (p.completedAt || p.createdAt || p.startedAt)?.split('T')[0]
+            if (dateStr) {
+                const day = last7Days.find(d => d.fullDate === dateStr)
+                if (day) day.usage++
+            }
+        })
+
+        // Count "Tests" (Quiz Completions)
+        qr.forEach(r => {
+            const dateStr = r.completedAt?.split('T')[0]
+            if (dateStr) {
+                const day = last7Days.find(d => d.fullDate === dateStr)
+                if (day) day.tests++
+            }
+        })
+
+        setActivityData(last7Days)
+    }
 
     if (loading) return <div className="loading-spinner" />
 
@@ -94,16 +130,6 @@ export default function AdminDashboardPage() {
         { subject: 'บทเรียนที่จบ', A: Math.min(100, (completedStudentsCount / (users.length || 1)) * 100), fullMark: 100 },
     ]
 
-    // Mock area chart data for "Activity Trend"
-    const activityData = [
-        { name: 'Mon', usage: 45, tests: 32 },
-        { name: 'Tue', usage: 52, tests: 38 },
-        { name: 'Wed', usage: 48, tests: 42 },
-        { name: 'Thu', usage: 61, tests: 45 },
-        { name: 'Fri', usage: 55, tests: 40 },
-        { name: 'Sat', usage: 67, tests: 52 },
-        { name: 'Sun', usage: 72, tests: 58 },
-    ]
 
     // Per-course performance metrics
     const courseMetrics = courses.map(c => {

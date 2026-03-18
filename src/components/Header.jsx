@@ -71,6 +71,9 @@ export default function Header() {
                                         </div>
                                     </div>
                                     <div className="profile-dropdown-divider" />
+                                    <button className="profile-dropdown-item" onClick={() => { navigate('/profile'); setProfileOpen(false); }}>
+                                        <User size={16} /> แก้ไขข้อมูลส่วนตัว
+                                    </button>
                                     <button className="profile-dropdown-item" onClick={handleLogout}>
                                         <LogOut size={16} /> ออกจากระบบ
                                     </button>
@@ -96,6 +99,10 @@ export default function Header() {
                                 {link.label}
                             </NavLink>
                         ))}
+                        <NavLink to="/profile" className={({ isActive }) => `top-nav-mobile-link ${isActive ? 'active' : ''}`}
+                            onClick={() => setMobileOpen(false)}>
+                            <User size={18} /> แก้ไขข้อมูลส่วนตัว
+                        </NavLink>
                         <button className="top-nav-mobile-link" onClick={handleLogout} style={{ color: 'var(--accent-danger)' }}>
                             <LogOut size={18} /> ออกจากระบบ
                         </button>

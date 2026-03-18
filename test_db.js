@@ -6,12 +6,9 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function check() {
-    const { data, error } = await supabase.from('lessons').select('id, title, content');
-    if (error) {
-        console.error('Error fetching lessons:', error);
-    } else {
-        console.log(JSON.stringify(data, null, 2));
-    }
+    const { data: progress, error } = await supabase.from('lessonProgress').select('*').limit(1);
+    if (error) console.error(error);
+    else console.log('All Progress Keys:', progress[0] ? Object.keys(progress[0]) : 'Empty table');
 }
 
 check();
