@@ -10,18 +10,22 @@ export default function ContentManagerPage() {
     const [editItem, setEditItem] = useState(null)
     const [loading, setLoading] = useState(true)
     const [uploading, setUploading] = useState(false)
+    const [lessonProgress, setLessonProgress] = useState([])
 
     const loadData = async () => {
         try {
             const [
                 { data: c },
                 { data: l },
+                { data: p },
             ] = await Promise.all([
                 supabase.from('courses').select('*'),
                 supabase.from('lessons').select('*'),
+                supabase.from('lessonProgress').select('*'),
             ])
             setCourses(c || [])
             setLessons(l || [])
+            setLessonProgress(p || [])
         } catch (err) {
             console.error("Error loading data:", err)
         } finally {
@@ -199,24 +203,50 @@ export default function ContentManagerPage() {
                     </div>
                     <div className="glass-card glass-card--static">
                         <table className="data-table">
-                            <thead><tr><th>ไอคอน</th><th>ชื่อคอร์ส</th><th>ผู้สอน</th><th>หมวดหมู่</th><th>บทเรียน</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
+                            <thead><tr><th>ไอคอน</th><th>ชื่อคอร์ส</th><th>ผู้สอน</th><th>หมวดหมู่</th><th>บทเรียน</th><th>ความคืบหน้า</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
                             <tbody>
-                                {courses.map(c => (
-                                    <tr key={c.id}>
-                                        <td style={{ fontSize: '1.5rem' }}>{c.thumbnail}</td>
-                                        <td><strong>{c.title}</strong><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{(c.description || '').slice(0, 60)}...</div></td>
-                                        <td style={{ fontSize: '0.85rem' }}>{c.instructor || 'ไม่ระบุ'}</td>
-                                        <td><span className="badge badge-primary">{c.category}</span></td>
-                                        <td>{lessons.filter(l => l.courseId === c.id).length} บท</td>
-                                        <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{c.updatedAt || c.createdAt ? new Date(c.updatedAt || c.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td>
-                                        <td>
-                                            <div className="action-buttons">
-                                                <button className="btn btn-ghost btn-sm" onClick={() => openCourseModal(c)}><Edit2 size={14} /></button>
-                                                <button className="btn btn-ghost btn-sm" onClick={() => deleteCourse(c.id)} style={{ color: 'var(--accent-danger)' }}><Trash2 size={14} /></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {courses.map(c => {
+                                    const courseLessons = lessons.filter(l => l.courseId === c.id)
+                                    const lessonIds = courseLessons.map(l => l.id)
+                                    const relevantProgress = lessonProgress.filter(p => lessonIds.includes(p.lessonId))
+                                    const enrolledUserIds = [...new Set(relevantProgress.map(p => p.userId))]
+                                    const totalEnrolled = enrolledUserIds.length
+                                    
+                                    let avgProgress = 0
+                                    if (totalEnrolled > 0 && courseLessons.length > 0) {
+                                        const totalPossible = totalEnrolled * courseLessons.length
+                                        const totalCompleted = relevantProgress.filter(p => p.completed).length
+                                        avgProgress = Math.round((totalCompleted / totalPossible) * 100)
+                                    }
+
+                                    return (
+                                        <tr key={c.id}>
+                                            <td style={{ fontSize: '1.5rem' }}>{c.thumbnail}</td>
+                                            <td><strong>{c.title}</strong><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{(c.description || '').slice(0, 60)}...</div></td>
+                                            <td style={{ fontSize: '0.85rem' }}>{c.instructor || 'ไม่ระบุ'}</td>
+                                            <td><span className="badge badge-primary">{c.category}</span></td>
+                                            <td>{courseLessons.length} บท</td>
+                                            <td>
+                                                <div className="flex flex-col gap-xs" style={{ minWidth: 120 }}>
+                                                    <div className="flex justify-between items-center" style={{ fontSize: '0.75rem', marginBottom: 4 }}>
+                                                        <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>{avgProgress}%</span>
+                                                        <span style={{ color: 'var(--text-muted)' }}>{totalEnrolled} คน</span>
+                                                    </div>
+                                                    <div className="progress-bar" style={{ height: 6 }}>
+                                                        <div className="progress-bar-fill" style={{ width: `${avgProgress}%` }}></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{c.updatedAt || c.createdAt ? new Date(c.updatedAt || c.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td>
+                                            <td>
+                                                <div className="action-buttons">
+                                                    <button className="btn btn-ghost btn-sm" onClick={() => openCourseModal(c)}><Edit2 size={14} /></button>
+                                                    <button className="btn btn-ghost btn-sm" onClick={() => deleteCourse(c.id)} style={{ color: 'var(--accent-danger)' }}><Trash2 size={14} /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>

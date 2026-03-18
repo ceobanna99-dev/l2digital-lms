@@ -1,0 +1,186 @@
+{
+  "course_title": "Mobile Enquiry Training Program",
+  "instructor": "Pollakrit Kowthong (Call Center Academy)",
+  "course_id": "CM24033",
+  "course_overview": {
+    "difficulty": "Call Center Skill for Beginner",
+    "targeted_audience": "พนักงานทุกระดับ (All Level Staff)",
+    "total_lessons": 10,
+    "total_topics": 96,
+    "total_quizzes": 8,
+    "pass_criteria": "85% for all quizzes and final test",
+    "attempts_allowed": 2
+  },
+  "lessons": [
+    {
+      "lesson_number": 1,
+      "lesson_title": "Lesson 1: ภาพรวม Basic Knowledge",
+      "summary": "8 Topics | 1 Quiz",
+      "topics": [
+        { "id": "1.1", "title": "มารู้จักระบบโครงข่ายของ True Move H กันครับ (1G-4G)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116366617", "description": "วิวัฒนาการและโครงข่ายของ True Move H" },
+        { "id": "1.2", "title": "คลื่นความถี่ต่ำและสูง / ความรู้พื้นฐานเกี่ยวกับเทคโนโลยี 4G, 4G+", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116368971", "description": "เปรียบเทียบคลื่นความถี่และเทคโนโลยี 4G/4G+" },
+        { "id": "1.3", "title": "ความรู้พื้นฐานเกี่ยวกับเทคโนโลยี 4G VOLTE", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116369599", "description": "เทคโนโลยีการโทรผ่านเครือข่าย 4G (Voice over LTE)" },
+        { "id": "1.4", "title": "ความรู้พื้นฐานเกี่ยวกับเทคโนโลยี VoWIFI & WiFi Calling", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116370608", "description": "การใช้งานโทรผ่าน WiFi" },
+        { "id": "1.5", "title": "วิธีการใช้งาน WiFi @TrueWiFi & @True MoveH", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116371033", "description": "การเชื่อมต่อและใช้งานเครือข่าย WiFi" },
+        { "id": "1.6", "title": "ภาพรวมสินค้าและบริการของ True Move H", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116371318", "description": "สรุปบริการและผลิตภัณฑ์เด่นของ True Move H" },
+        { "id": "1.7", "title": "(Survey) แบบประเมินความพึงพอใจ Lesson 1", "format": "Survey" },
+        { "id": "1.8", "title": "(Quiz) แบบทดสอบ Lesson 1: Basic Knowledge Mobile", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 2,
+      "lesson_title": "Lesson 2: Basic Knowledge TMH Prepaid",
+      "summary": "1 Topic",
+      "topics": [
+        { "id": "2.1", "title": "ความรู้พื้นฐานของระบบเติมเงิน (Concept)(VDO)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116371572" }
+      ]
+    },
+    {
+      "lesson_number": 3,
+      "lesson_title": "Lesson 3: Basic Knowledge TMH Postpaid",
+      "summary": "4 Topics | 1 Quiz",
+      "topics": [
+        { "id": "3.1", "title": "ความรู้พื้นฐานของระบบรายเดือน (Postpaid Journey)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116371589" },
+        { "id": "3.2", "title": "การเปรียบเทียบความแตกต่างระบบเติมเงินและรายเดือน (Compare Pre vs Post)(Concept)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116372404" },
+        { "id": "3.3", "title": "(Survey) แบบประเมินความพึงพอใจ Lesson 3", "format": "Survey" },
+        { "id": "3.4", "title": "(Quiz) แบบทดสอบ Lesson 3: Basic Knowledge Mobile Postpaid", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 4,
+      "lesson_title": "Lesson 4: Promotion Prepaid",
+      "summary": "20 Topics | 1 Quiz",
+      "topics": [
+        { "id": "4.1", "title": "เริ่มต้นการใช้งานระบบเติมเงิน (Prepaid Journey)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116510683" },
+        { "id": "4.2", "title": "การตรวจสอบข้อมูลระบบเติมเงิน (ccrweb -> Customer Information)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116511320" },
+        { "id": "4.3", "title": "สถานะการใช้บริการของหมายเลขทรูมูฟ เอช แบบเติมเงิน (Pre)(Concept)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116511669" },
+        { "id": "4.4", "title": "ตารางรวมกระเป๋า Bonus ต่าง ๆ ของระบบเติมเงิน (Pre)(Concept)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116511929" },
+        { "id": "4.5", "title": "ความหมาย Internet Cap MAX (Post & Pre)(Concept)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116512217" },
+        { "id": "4.6", "title": "การคืนเงินลูกค้าทรูมูฟ เอช แบบเติมเงิน (Prepay Refund TMH)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116513982" },
+        { "id": "4.7", "title": "บริการเพิ่มวันทันใจ (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116514271" },
+        { "id": "4.8", "title": "บริการให้ใช้ทันใจ (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116514676" },
+        { "id": "4.9", "title": "บริการให้ยืมเน็ต (True Advance Service)(Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116515106" },
+        { "id": "4.10", "title": "บริการให้ยืมค่าโทร (True Airtime Advance)(Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116515841" },
+        { "id": "4.11", "title": "การหักค่าบริการเสียงรอสายแบบ Step Charging (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116532233" },
+        { "id": "4.12", "title": "การตรวจสอบโปรโมชั่นปัจจุบัน (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116533109" },
+        { "id": "4.13", "title": "วิธีการตรวจสอบด้วยตนเอง (Self Service)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116533520" },
+        { "id": "4.14", "title": "วิธีการเปลี่ยนโปรโมชั่นหลักระบบเติมเงิน (Change Main PL Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116534076" },
+        { "id": "4.15", "title": "ตรวจสอบ Package เสริมผ่าน CCRWEB", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116534346" },
+        { "id": "4.16", "title": "ตรวจสอบประวัติการสมัครและยกเลิก Content Download", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116534907" },
+        { "id": "4.17", "title": "แนะนำการสมัครและยกเลิก Package เสริมระบบเติมเงิน (Buy/Cancel Topping Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116535471" },
+        { "id": "4.18", "title": "การตรวจสอบรอบการหักค่าบริการรายสัปดาห์ / รายเดือน (Recurring Date Table Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116536162" },
+        { "id": "4.19", "title": "แนะนำการตรวจสอบการคิดค่าบริการ Data กรณีพบยอดเงินหาย", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116536536" },
+        { "id": "4.20", "title": "(Survey) แบบประเมินความพึงพอใจ Lesson 4", "format": "Survey" },
+        { "id": "4.21", "title": "(Quiz) แบบทดสอบ Lesson 4: Promotion Mobile Prepaid", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 5,
+      "lesson_title": "Lesson 5: Promotion Postpaid",
+      "summary": "7 Topics | 1 Quiz",
+      "topics": [
+        { "id": "5.1", "title": "แนะนำโปรโมชั่น Mobile Postpaid – Share Plan", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116536931" },
+        { "id": "5.2", "title": "แนะนำโปรโมชั่น Mobile Postpaid – Multi Sim", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116660742" },
+        { "id": "5.3", "title": "แนะนำ Campaign ส่วนลด", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116661906" },
+        { "id": "5.4", "title": "แนะนำ Campaign สัญญาการใช้งาน (Lock Device/Employee)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116695886" },
+        { "id": "5.5", "title": "ขั้นตอนการเปลี่ยนโปรโมชั่นหลักบนระบบ CRM Mobile Postpaid", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116697648" },
+        { "id": "5.6", "title": "แนะนำเมนูการสมัคร และการยกเลิก Package เสริม", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116698669" },
+        { "id": "5.7", "title": "(Survey) แบบประเมินความพึงพอใจ Lesson 5", "format": "Survey" },
+        { "id": "5.8", "title": "(Quiz) แบบทดสอบ Lesson 5: Promotion Mobile Postpaid", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 6,
+      "lesson_title": "Lesson 6: Billing Mobile Postpaid",
+      "summary": "19 Topics | 1 Quiz",
+      "topics": [
+        { "id": "6.3", "title": "วิธีการตรวจสอบยอดค่าบริการ", "format": "Simulator", "asset_url": "https://view.genial.ly/64c8a01758ebd1001102f168" },
+        { "id": "6.8", "title": "แจ้งส่วนลด หรือสัญญาการใช้งาน", "format": "Simulator", "asset_url": "https://view.genial.ly/64c8a01758ebd1001102f168" },
+        { "id": "6.23", "title": "คู่มือการใช้งานระหว่างรอบที่ยังไม่ตัดรอบบิล (Unbilled Call Summary)", "format": "PDF", "asset_url": "https://www.digilearn.support/wp-content/material/CM24033-L623.pdf", "local_path": "assets/CM24033-L623.pdf" },
+        { "id": "6.24", "title": "ขั้นตอนการสมัครบริการ DCB ลูกค้าระบบรายเดือน", "format": "PDF", "asset_url": "https://www.digilearn.support/wp-content/material/CM24033-L624.pdf", "local_path": "assets/CM24033-L624.pdf" },
+        { "id": "606", "title": "อธิบายรายละเอียดการใช้งาน Postpaid / Bill Image", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116699718" },
+        { "id": "607", "title": "ตรวจสอบ Bundle Usage /แจ้งยอดคงเหลือ", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116703622" },
+        { "id": "609", "title": "แจ้งยอดบิลที่อยู่ระหว่างการจัดทำใบแจ้งค่าบริการ (Calculated)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116704315" },
+        { "id": "610", "title": "ตรวจสอบสาเหตุระงับสัญญาณ และเปิดสัญญาณ กรณีติด C", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116705415" },
+        { "id": "611", "title": "ตรวจสอบสาเหตุระงับสัญญาณ และเปิดสัญญาณ กรณีติด R ,RC", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116706428" },
+        { "id": "612", "title": "อธิบายความหมายของวงเงิน/วงเงินมีกี่ประเภท/ตรวจสอบวงเงิน", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116707726" },
+        { "id": "614", "title": "สามารถลดวงเงิน (Post)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116708841" },
+        { "id": "615", "title": "สามารถเพิ่มวงเงิน (Post)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116709372" },
+        { "id": "616", "title": "ความหมายของ Knox", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116710264" },
+        { "id": "617", "title": "Knox ขั้นตอนการ Unlock หลังชำระค่าบริการ", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116792415" },
+        { "id": "618", "title": "Knox ลูกค้าขอเปิดสัญญาณชั่วคราว นัดชำระ", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116795519" },
+        { "id": "619", "title": "บริการชำระเงินผ่านทรูมูฟ เอช Direct Carrier Billing (DCB)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116796897" },
+        { "id": "620", "title": "การผ่อนชำระค่าบริการ (Post)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116799694" },
+        { "id": "621", "title": "การคิดค่าดอกเบี้ยผิดนัดชำระค่าบริการ (Post)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116806398" },
+        { "id": "6.24", "title": "(Survey) แบบประเมินความพึงพอใจ Lesson 6", "format": "Survey" },
+        { "id": "6.25", "title": "(Quiz) แบบทดสอบ Lesson 6: Billing Mobile Postpaid", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 7,
+      "lesson_title": "Lesson 7: Billing Mobile Prepaid",
+      "summary": "13 Topics | 1 Quiz",
+      "topics": [
+        { "id": "7.1", "title": "ประวัติการมองเห็นธุรกรรมบริการต่างๆ และตรวจสอบประวัติการเติมเงิน", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117007550" },
+        { "id": "7.2", "title": "ตรวจสอบยอดเงิน และวันใช้งานคงเหลือ", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116809318" },
+        { "id": "7.3", "title": "ตรวจสอบยอดการใช้งานอินเตอร์เน็ต แพ็กเกจหลักและแพ็กเกจเสริม", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116811951" },
+        { "id": "7.4", "title": "แจ้งสรุปค่าใช้บริการเบื้องต้น และระยะเวลารอสาย IR (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116813674" },
+        { "id": "7.5", "title": "แจ้งรายละเอียดโปรโมชั่นที่ใช้งานปัจจุบัน (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116815586" },
+        { "id": "7.6", "title": "แจ้งรายละเอียดแพ็กเกจเสริมที่ใช้งานปัจจุบัน (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116993098" },
+        { "id": "7.7", "title": "ตรวจสอบประวัติยอดการเติมเงิน และตรวจสอบช่องทางการเติมเงิน (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116993789" },
+        { "id": "7.8", "title": "บริการใจดีให้ยืม (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1116994384" },
+        { "id": "7.9", "title": "สมัครแพ็กเกจเสริมเบื้องต้น (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117000071" },
+        { "id": "7.10", "title": "การโอนเงิน/โอนวัน (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117000732" },
+        { "id": "7.11", "title": "แจ้งสาเหตุระงับสัญญาณ (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117001413" },
+        { "id": "7.12", "title": "บริการ Content Download (Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117001957" },
+        { "id": "7.13", "title": "(Survey) แบบประเมินความพึงพอใจ Lesson 7", "format": "Survey" },
+        { "id": "7.14", "title": "(Quiz) แบบทดสอบ Lesson 7: Billing Mobile Prepaid", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 8,
+      "lesson_title": "Lesson 8: Aftersale Mobile Enquiry",
+      "summary": "23 Topics | 1 Quiz",
+      "topics": [
+        { "id": "8.1", "title": "ยกเลิกบริการ Mobile", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117003799" },
+        { "id": "8.2", "title": "MNP PortIN (Post/Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117005925" },
+        { "id": "8.3", "title": "ย้ายค่ายเบอร์เดิม Port Out", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117008334" },
+        { "id": "8.4", "title": "ความหมาย IDD", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117009393" },
+        { "id": "8.5", "title": "Process สมัคร IDD", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117010139" },
+        { "id": "8.6", "title": "Process ยกเลิก IDD", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117010670" },
+        { "id": "8.7", "title": "สมัคร IDD บน CRM", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117012421" },
+        { "id": "8.8", "title": "ยกเลิก IDD บน CRM", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117013579" },
+        { "id": "8.9", "title": "สรุปขั้นตอนระบบรายเดือนขอเปิด IR (Post/Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117020987" },
+        { "id": "8.10", "title": "Process สมัคร IR (Post/Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117022948" },
+        { "id": "8.11", "title": "Process ยกเลิก IR (Post/Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117023696" },
+        { "id": "8.12", "title": "Process สมัคร IR (VDO)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117024629" },
+        { "id": "8.13", "title": "Process ยกเลิก IR (VDO)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117025977" },
+        { "id": "8.14", "title": "วิธีสมัคร IR บน CRM", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117031633" },
+        { "id": "8.15", "title": "วิธียกเลิก IR บน CRM", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117032309" },
+        { "id": "8.16", "title": "ซิมหาย / วิธีเปิดสัญญาณ(Restore)(Post)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117034157" },
+        { "id": "8.17", "title": "ซิมหาย / วิธีปิดสัญญาณ (Suspend)(Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117034817" },
+        { "id": "8.18", "title": "ซิมหาย / วิธีเปิดสัญญาณ(Restore)(Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117035245" },
+        { "id": "8.19", "title": "ยกเลิกบริการ Content Download", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117037424" },
+        { "id": "8.20", "title": "การนำเบอร์เดิม กลับมาใช้งาน (Post/Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117037980" },
+        { "id": "8.21", "title": "การย้ายค่ายเบอร์เดิม (MNP) รูปแบบใหม่ (Post/Pre)", "format": "Video", "asset_url": "https://player.vimeo.com/video/1117039159" },
+        { "id": "8.22", "title": "(Quiz) แบบทดสอบ Lesson 8: After Sale Mobile (Postpaid)", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 9,
+      "lesson_title": "Final Test",
+      "summary": "1 Quiz",
+      "topics": [
+        { "id": "9.1", "title": "(Quiz) แบบทดสอบ Final Test: Mobile Enquiry Training Program", "format": "Quiz" }
+      ]
+    },
+    {
+      "lesson_number": 10,
+      "lesson_title": "Survey",
+      "summary": "1 Topic",
+      "topics": [
+        { "id": "10.1", "title": "(Survey) แบบประเมินหลักสูตร Mobile Enquiry Training Program", "format": "Survey" }
+      ]
+    }
+  ]
+}
