@@ -96,13 +96,17 @@ export default function AdminDashboardPage() {
         }
     })
 
-    // Score distribution for pie chart
+    // Score distribution for donut chart
+    const totalQuizzes = quizResults.length
     const scoreRanges = [
-        { name: '90-100%', value: quizResults.filter(r => r.score >= 90).length },
-        { name: '70-89%', value: quizResults.filter(r => r.score >= 70 && r.score < 90).length },
-        { name: '50-69%', value: quizResults.filter(r => r.score >= 50 && r.score < 70).length },
-        { name: '<50%', value: quizResults.filter(r => r.score < 50).length },
-    ].filter(r => r.value > 0)
+        { name: 'ดีเยี่ยม (90-100%)', value: quizResults.filter(r => r.score >= 90).length, color: '#10b981' },
+        { name: 'ดี (70-89%)', value: quizResults.filter(r => r.score >= 70 && r.score < 90).length, color: '#06b6d4' },
+        { name: 'พอใช้ (50-69%)', value: quizResults.filter(r => r.score >= 50 && r.score < 70).length, color: '#f59e0b' },
+        { name: 'ต้องปรับปรุง (<50%)', value: quizResults.filter(r => r.score < 50).length, color: '#ef4444' },
+    ].map(r => ({
+        ...r,
+        percentage: totalQuizzes > 0 ? Math.round((r.value / totalQuizzes) * 100) : 0
+    })).filter(r => r.value > 0)
 
     const PIE_COLORS = ['#10b981', '#06b6d4', '#f59e0b', '#ef4444']
 
@@ -200,30 +204,49 @@ export default function AdminDashboardPage() {
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
                         การกระจายคะแนน
                     </h3>
-                    <div style={{ height: 250 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={scoreRanges}
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={80}
-                                    dataKey="value"
-                                    label={({ name, value }) => `${name}: ${value}`}
-                                >
-                                    {scoreRanges.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        background: 'var(--bg-secondary)',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '8px',
-                                        color: 'var(--text-primary)',
-                                        fontSize: '0.85rem'
-                                    }}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
+                    <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-lg)' }}>
+                        <div style={{ width: '50%', height: '100%', position: 'relative' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={scoreRanges}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        label={false}
+                                    >
+                                        {scoreRanges.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{
+                                            background: 'var(--bg-secondary)',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            fontSize: '0.85rem'
+                                        }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>รวมทั้งหมด</div>
+                                <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{totalQuizzes}</div>
+                                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>ครั้งทดสอบ</div>
+                            </div>
+                        </div>
+                        <div style={{ width: '45%', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                            {scoreRanges.map((range, i) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: range.color }} />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>{range.name}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{range.value} คน ({range.percentage}%)</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
