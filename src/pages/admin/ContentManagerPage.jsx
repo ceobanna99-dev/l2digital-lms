@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import { supabase } from '../../config/supabaseClient'
-import { Plus, Edit2, Trash2, X, BookOpen, FileText, Image, Film, Loader } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, BookOpen, FileText, Image, Film, Loader, ChevronDown, ChevronRight } from 'lucide-react'
 
 export default function ContentManagerPage() {
     const [courses, setCourses] = useState([])
@@ -8,6 +8,7 @@ export default function ContentManagerPage() {
     const [tab, setTab] = useState('courses')
     const [showModal, setShowModal] = useState(false)
     const [editItem, setEditItem] = useState(null)
+    const [expandedCourseId, setExpandedCourseId] = useState(null)
     const [loading, setLoading] = useState(true)
     const [uploading, setUploading] = useState(false)
     const [lessonProgress, setLessonProgress] = useState([])
@@ -207,7 +208,7 @@ export default function ContentManagerPage() {
                     </div>
                     <div className="glass-card glass-card--static">
                         <table className="data-table">
-                            <thead><tr><th>ไอคอน</th><th>ชื่อคอร์ส</th><th>ผู้สอน</th><th>หมวดหมู่</th><th>บทเรียน</th><th>ความคืบหน้า</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
+                            <thead><tr><th style={{ width: 40 }}></th><th>ไอคอน</th><th>ชื่อคอร์ส</th><th>ผู้สอน</th><th>หมวดหมู่</th><th>บทเรียน</th><th>ความคืบหน้า</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
                             <tbody>
                                 {courses.map(c => {
                                     const courseLessons = lessons.filter(l => l.courseId === c.id)
@@ -216,6 +217,7 @@ export default function ContentManagerPage() {
                                     const startedUserIds = [...new Set(relevantProgress.map(p => p.userId))]
                                     const totalStarted = startedUserIds.length
                                     const totalStudentsCount = allStudents.length
+                                    const isExpanded = expandedCourseId === c.id
                                     
                                     let avgProgress = 0
                                     if (totalStudentsCount > 0 && courseLessons.length > 0) {
@@ -225,31 +227,88 @@ export default function ContentManagerPage() {
                                     }
 
                                     return (
-                                        <tr key={c.id}>
-                                            <td style={{ fontSize: '1.5rem' }}>{c.thumbnail}</td>
-                                            <td><strong>{c.title}</strong><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{(c.description || '').slice(0, 60)}...</div></td>
-                                            <td style={{ fontSize: '0.85rem' }}>{c.instructor || 'ไม่ระบุ'}</td>
-                                            <td><span className="badge badge-primary">{c.category}</span></td>
-                                            <td>{courseLessons.length} บท</td>
-                                            <td>
-                                                <div className="flex flex-col gap-xs" style={{ minWidth: 120 }}>
-                                                    <div className="flex justify-between items-center" style={{ fontSize: '0.75rem', marginBottom: 4 }}>
-                                                        <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>{avgProgress}%</span>
-                                                        <span style={{ color: 'var(--text-muted)' }}>{totalStarted}/{totalStudentsCount} คน</span>
+                                        <Fragment key={c.id}>
+                                            <tr className={isExpanded ? 'active-row' : ''} style={{ cursor: 'pointer', transition: 'background 0.2s' }} onClick={() => setExpandedCourseId(isExpanded ? null : c.id)}>
+                                                <td>
+                                                    <button className="btn btn-ghost btn-xs" style={{ padding: 4 }}>
+                                                        {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                                    </button>
+                                                </td>
+                                                <td style={{ fontSize: '1.5rem' }}>{c.thumbnail}</td>
+                                                <td><strong>{c.title}</strong><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{(c.description || '').slice(0, 60)}...</div></td>
+                                                <td style={{ fontSize: '0.85rem' }}>{c.instructor || 'ไม่ระบุ'}</td>
+                                                <td><span className="badge badge-primary">{c.category}</span></td>
+                                                <td>{courseLessons.length} บท</td>
+                                                <td>
+                                                    <div className="flex flex-col gap-xs" style={{ minWidth: 120 }}>
+                                                        <div className="flex justify-between items-center" style={{ fontSize: '0.75rem', marginBottom: 4 }}>
+                                                            <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>{avgProgress}%</span>
+                                                            <span style={{ color: 'var(--text-muted)' }}>{totalStarted}/{totalStudentsCount} คน</span>
+                                                        </div>
+                                                        <div className="progress-bar" style={{ height: 6 }}>
+                                                            <div className="progress-bar-fill" style={{ width: `${avgProgress}%` }}></div>
+                                                        </div>
                                                     </div>
-                                                    <div className="progress-bar" style={{ height: 6 }}>
-                                                        <div className="progress-bar-fill" style={{ width: `${avgProgress}%` }}></div>
+                                                </td>
+                                                <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{c.updatedAt || c.createdAt ? new Date(c.updatedAt || c.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td>
+                                                <td>
+                                                    <div className="action-buttons" onClick={(e) => e.stopPropagation()}>
+                                                        <button className="btn btn-ghost btn-sm" onClick={() => openCourseModal(c)}><Edit2 size={14} /></button>
+                                                        <button className="btn btn-ghost btn-sm" onClick={() => deleteCourse(c.id)} style={{ color: 'var(--accent-danger)' }}><Trash2 size={14} /></button>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{c.updatedAt || c.createdAt ? new Date(c.updatedAt || c.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}</td>
-                                            <td>
-                                                <div className="action-buttons">
-                                                    <button className="btn btn-ghost btn-sm" onClick={() => openCourseModal(c)}><Edit2 size={14} /></button>
-                                                    <button className="btn btn-ghost btn-sm" onClick={() => deleteCourse(c.id)} style={{ color: 'var(--accent-danger)' }}><Trash2 size={14} /></button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                            </tr>
+                                            {isExpanded && (
+                                                <tr style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                                                    <td colSpan="9" style={{ padding: '0 0 var(--space-md) 0' }}>
+                                                        <div className="nested-lessons" style={{ marginLeft: 40, borderLeft: '2px solid var(--accent-primary)', paddingLeft: 'var(--space-md)' }}>
+                                                            <table className="data-table data-table--small" style={{ fontSize: '0.85rem' }}>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>#</th>
+                                                                        <th>ชื่อบทเรียน</th>
+                                                                        <th>ความคืบหน้า</th>
+                                                                        <th>จัดการ</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {courseLessons.sort((a, b) => a.order - b.order).map(l => {
+                                                                        const lessonProgressData = lessonProgress.filter(p => p.lessonId === l.id && p.completed)
+                                                                        const lessonPercent = totalStudentsCount > 0 ? Math.round((lessonProgressData.length / totalStudentsCount) * 100) : 0
+                                                                        return (
+                                                                            <tr key={l.id}>
+                                                                                <td style={{ width: 30 }}>{l.order}</td>
+                                                                                <td>{l.title}</td>
+                                                                                <td style={{ width: 150 }}>
+                                                                                    <div className="flex flex-col gap-xs">
+                                                                                        <div className="flex justify-between items-center" style={{ fontSize: '0.7rem' }}>
+                                                                                            <span style={{ color: 'var(--accent-success)' }}>{lessonPercent}%</span>
+                                                                                            <span style={{ color: 'var(--text-muted)' }}>{lessonProgressData.length}/{totalStudentsCount} คน</span>
+                                                                                        </div>
+                                                                                        <div className="progress-bar" style={{ height: 4 }}>
+                                                                                            <div className="progress-bar-fill" style={{ width: `${lessonPercent}%`, background: 'var(--gradient-success)' }}></div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td style={{ width: 80 }}>
+                                                                                    <div className="action-buttons">
+                                                                                        <button className="btn btn-ghost btn-xs" onClick={() => openLessonModal(l)}><Edit2 size={12} /></button>
+                                                                                        <button className="btn btn-ghost btn-xs" onClick={() => deleteLesson(l.id)} style={{ color: 'var(--accent-danger)' }}><Trash2 size={12} /></button>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        )
+                                                                    })}
+                                                                    {courseLessons.length === 0 && (
+                                                                        <tr><td colSpan="4" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>ยังไม่มีบทเรียน</td></tr>
+                                                                    )}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </Fragment>
                                     )
                                 })}
                             </tbody>
