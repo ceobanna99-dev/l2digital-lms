@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../config/supabaseClient'
 import { useAuth } from '../contexts/AuthContext'
-import { User, Lock, Camera, CheckCircle, XCircle, Loader2, Save, KeyRound } from 'lucide-react'
+import { User, Lock, Camera, CheckCircle, XCircle, Loader, Save, Key } from 'lucide-react'
 
 export default function ProfilePage() {
     const { user, updateUser } = useAuth()
@@ -123,7 +123,7 @@ export default function ProfilePage() {
                             }}>
                                 {uploading ? (
                                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Loader2 className="animate-spin" style={{ color: 'var(--accent-primary)' }} />
+                                        <Loader className="animate-spin" style={{ color: 'var(--accent-primary)' }} />
                                     </div>
                                 ) : (
                                     <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -164,7 +164,7 @@ export default function ProfilePage() {
                 <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: 'var(--space-lg)' }}>
                         <div style={{ padding: '10px', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--accent-primary)', borderRadius: '12px' }}>
-                            <KeyRound size={22} />
+                            <Key size={22} />
                         </div>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>เปลี่ยนรหัสผ่าน</h3>
                     </div>
@@ -219,7 +219,7 @@ export default function ProfilePage() {
                         </div>
 
                         <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ height: '48px', marginTop: 'var(--space-sm)' }}>
-                            {loading ? <Loader2 size={18} className="animate-spin" /> : <><Save size={18} /> บันทึกการเปลี่ยนแปลง</>}
+                            {loading ? <Loader size={18} className="animate-spin" /> : <><Save size={18} /> บันทึกการเปลี่ยนแปลง</>}
                         </button>
                     </form>
                 </div>
