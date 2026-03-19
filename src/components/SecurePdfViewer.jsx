@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Maximize, Loader } from 'lucide-react';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -11,11 +11,54 @@ export default function SecurePdfViewer({ url }) {
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1);
     const [scale, setScale] = useState(1.0);
+    const [containerWidth, setContainerWidth] = useState(null);
+    const [isAutoScaled, setIsAutoScaled] = useState(true);
+    const containerRef = useRef(null);
 
     function onDocumentLoadSuccess({ numPages }) {
         setNumPages(numPages);
         setPageNumber(1);
     }
+
+    // Effect to handle container width for auto-scaling
+    useEffect(() => {
+        const updateWidth = () => {
+            if (containerRef.current) {
+                // Subtract padding (var(--space-md) is usually 1.25rem or 20px, so 40px total for left+right)
+                const width = containerRef.current.offsetWidth - 40;
+                setContainerWidth(width);
+            }
+        };
+
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        
+        // Also observe for container resize specifically (useful if sidebars toggle)
+        const resizeObserver = new ResizeObserver(updateWidth);
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+            resizeObserver.disconnect();
+        };
+    }, []);
+
+    const handleZoomIn = () => {
+        setIsAutoScaled(false);
+        setScale(s => Math.min(2.5, s + 0.2));
+    };
+
+    const handleZoomOut = () => {
+        setIsAutoScaled(false);
+        setScale(s => Math.max(0.5, s - 0.2));
+    };
+
+    const handleToggleAutoZoom = () => {
+        setIsAutoScaled(prev => !prev);
+        if (!isAutoScaled) setScale(1.0); // Reset scale when enabling auto
+    };
 
     // Prevent Context Menu (Right-Click) to deter Saving/Copying
     const handleContextMenu = (e) => {
@@ -64,14 +107,31 @@ export default function SecurePdfViewer({ url }) {
                     </button>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn btn-ghost btn-icon" onClick={() => setScale(s => Math.max(0.5, s - 0.2))}>
+                <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
+                    <button 
+                        className={`btn btn-icon ${isAutoScaled ? 'btn-primary' : 'btn-ghost'}`} 
+                        onClick={handleToggleAutoZoom}
+                        title="พอดีกับความกว้างหน้าจอ"
+                        style={{ padding: '4px', height: '32px', width: '32px' }}
+                    >
+                        <Maximize size={16} />
+                    </button>
+                    
+                    <div style={{ width: '4px' }} />
+
+                    <button className="btn btn-ghost btn-icon" onClick={handleZoomOut}>
                         <ZoomOut size={18} />
                     </button>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>
-                        {Math.round(scale * 100)}%
+                    <span style={{ 
+                        fontSize: '0.85rem', 
+                        color: 'var(--text-secondary)', 
+                        minWidth: '45px', 
+                        textAlign: 'center',
+                        fontWeight: isAutoScaled ? '600' : 'normal'
+                    }}>
+                        {isAutoScaled ? 'พอดี' : `${Math.round(scale * 100)}%`}
                     </span>
-                    <button className="btn btn-ghost btn-icon" onClick={() => setScale(s => Math.min(2.5, s + 0.2))}>
+                    <button className="btn btn-ghost btn-icon" onClick={handleZoomIn}>
                         <ZoomIn size={18} />
                     </button>
                 </div>
@@ -79,16 +139,19 @@ export default function SecurePdfViewer({ url }) {
 
             {/* Document Viewer Area */}
             <div 
+                ref={containerRef}
                 onContextMenu={handleContextMenu}
                 style={{
                     padding: 'var(--space-md)',
                     overflow: 'auto',
-                    maxHeight: '650px',
+                    minHeight: '400px',
+                    maxHeight: '75vh', // Responsive height based on viewport
                     width: '100%',
                     display: 'flex',
-                    justifyContent: 'center',
-                    userSelect: 'none',   /* Disable Text Selection */
-                    pointerEvents: 'none' /* Disable Click drag selection interactions entirely over the canvas */
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    userSelect: 'none',
+                    pointerEvents: 'none'
                 }}
             >
                 {/* Pointer events set back to 'auto' for the document container, 
@@ -110,9 +173,10 @@ export default function SecurePdfViewer({ url }) {
                     >
                         <Page 
                             pageNumber={pageNumber} 
-                            scale={scale} 
-                            renderTextLayer={false} /* Disabled to prevent text selection */
-                            renderAnnotationLayer={false} /* Disabled to prevent clicking links / objects */
+                            scale={isAutoScaled ? undefined : scale}
+                            width={isAutoScaled ? containerWidth : undefined}
+                            renderTextLayer={false}
+                            renderAnnotationLayer={false}
                             loading={
                                 <div style={{ minHeight: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <Loader size={24} className="animate-spin" style={{ color: 'var(--accent-primary)' }} />
