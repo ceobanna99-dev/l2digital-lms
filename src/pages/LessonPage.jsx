@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../config/supabaseClient'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -25,6 +25,8 @@ export default function LessonPage() {
     const [comment, setComment] = useState('')
     const [existingRating, setExistingRating] = useState(null)
     const [submittingRating, setSubmittingRating] = useState(false)
+    const [maxTimeWatched, setMaxTimeWatched] = useState({}) // index -> seconds
+    const playerRefs = useRef({})
 
     useEffect(() => {
         const loadLessonData = async () => {
@@ -241,17 +243,47 @@ export default function LessonPage() {
                                 width="100%" 
                                 style={{ display: 'block', borderRadius: 'var(--radius-lg)' }}
                                 onEnded={() => setCompletedVideoIndices(prev => new Set(prev).add(i))}
+                                onTimeUpdate={(e) => {
+                                    const video = e.target
+                                    // Only update maxTime if we're not seeking forward
+                                    if (video.currentTime > (maxTimeWatched[i] || 0) + 1.5) {
+                                        // User tried to skip, snap back
+                                        video.currentTime = maxTimeWatched[i] || 0
+                                    } else {
+                                        setMaxTimeWatched(prev => ({ ...prev, [i]: Math.max(prev[i] || 0, video.currentTime) }))
+                                    }
+                                }}
+                                onSeeking={(e) => {
+                                    const video = e.target
+                                    if (video.currentTime > (maxTimeWatched[i] || 0)) {
+                                        video.currentTime = maxTimeWatched[i] || 0
+                                    }
+                                }}
                             >
                                 Your browser does not support the video tag.
                             </video>
                         ) : (
                             <ReactPlayer 
+                                ref={el => playerRefs.current[i] = el}
                                 url={url} 
                                 controls 
                                 width="100%" 
                                 height="100%" 
                                 style={{ position: 'absolute', top: 0, left: 0 }}
                                 onEnded={() => setCompletedVideoIndices(prev => new Set(prev).add(i))}
+                                onProgress={(state) => {
+                                    setMaxTimeWatched(prev => ({ ...prev, [i]: Math.max(prev[i] || 0, state.playedSeconds) }))
+                                }}
+                                onSeek={(seconds) => {
+                                    if (seconds > (maxTimeWatched[i] || 0)) {
+                                        playerRefs.current[i]?.seekTo(maxTimeWatched[i] || 0)
+                                    }
+                                }}
+                                config={{
+                                    youtube: {
+                                        playerVars: { disablekb: 1 } // Disable keyboard shortcuts to prevent skipping
+                                    }
+                                }}
                             />
                         )}
                     </div>
@@ -274,16 +306,29 @@ export default function LessonPage() {
                                 try {
                                     const player = e.target;
                                     const onMessage = (event) => {
+                                        if (event.source !== player.contentWindow) return;
                                         if (!event.data) return;
                                         try {
                                             const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                                            if (data.event === 'finish' || (data.event === 'ready' && player.contentWindow)) {
-                                                if (data.event === 'ready') {
-                                                    player.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'finish' }), '*');
+                                            
+                                            if (data.event === 'ready') {
+                                                player.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'finish' }), '*');
+                                                player.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'seek' }), '*');
+                                                player.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'playProgress' }), '*');
+                                            }
+
+                                            if (data.event === 'playProgress') {
+                                                setMaxTimeWatched(prev => ({ ...prev, [i]: Math.max(prev[i] || 0, data.data.seconds) }));
+                                            }
+
+                                            if (data.event === 'seek') {
+                                                if (data.data.seconds > (maxTimeWatched[i] || 0)) {
+                                                    player.contentWindow.postMessage(JSON.stringify({ method: 'seekTo', value: maxTimeWatched[i] || 0 }), '*');
                                                 }
-                                                if (data.event === 'finish') {
-                                                    setCompletedVideoIndices(prev => new Set(prev).add(i));
-                                                }
+                                            }
+
+                                            if (data.event === 'finish') {
+                                                setCompletedVideoIndices(prev => new Set(prev).add(i));
                                             }
                                         } catch (err) { }
                                     };
