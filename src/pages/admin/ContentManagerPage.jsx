@@ -13,6 +13,7 @@ export default function ContentManagerPage() {
     const [uploading, setUploading] = useState(false)
     const [lessonProgress, setLessonProgress] = useState([])
     const [allStudents, setAllStudents] = useState([])
+    const [courseFilter, setCourseFilter] = useState('all')
 
     const loadData = async () => {
         try {
@@ -319,15 +320,35 @@ export default function ContentManagerPage() {
 
             {tab === 'lessons' && (
                 <>
-                    <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-lg)' }}>
-                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>ทั้งหมด {lessons.length} บทเรียน</span>
+                    <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-lg)', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
+                        <div className="flex items-center gap-md" style={{ flexWrap: 'wrap' }}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>ทั้งหมด {lessons.length} บทเรียน</span>
+                            <div className="flex items-center gap-sm">
+                                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>กรองตามคอร์ส:</span>
+                                <select 
+                                    className="form-select" 
+                                    style={{ padding: '0.25rem 2rem 0.25rem 0.75rem', fontSize: '0.85rem', width: 'auto' }}
+                                    value={courseFilter}
+                                    onChange={(e) => setCourseFilter(e.target.value)}
+                                >
+                                    <option value="all">ทุกคอร์ส</option>
+                                    {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+                                </select>
+                            </div>
+                        </div>
                         <button className="btn btn-primary" onClick={() => openLessonModal()}><Plus size={16} /> เพิ่มบทเรียน</button>
                     </div>
                     <div className="glass-card glass-card--static">
                         <table className="data-table">
                             <thead><tr><th>ลำดับ</th><th>ชื่อบทเรียน</th><th>คอร์ส</th><th>ผู้สอน/ผู้สร้าง</th><th>ความคืบหน้า</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
                             <tbody>
-                                {lessons.map(l => {
+                                {lessons
+                                    .filter(l => courseFilter === 'all' || l.courseId === parseInt(courseFilter))
+                                    .sort((a, b) => {
+                                        if (a.courseId !== b.courseId) return a.courseId - b.courseId;
+                                        return (a.order || 0) - (b.order || 0);
+                                    })
+                                    .map(l => {
                                     const course = courses.find(c => c.id === l.courseId)
                                     const lessonProgressData = lessonProgress.filter(p => p.lessonId === l.id && p.completed)
                                     const totalCompleted = lessonProgressData.length
