@@ -150,7 +150,7 @@ export default function ContentManagerPage() {
     const saveLesson = async () => {
         if (!lessonForm.title.trim()) return
         const today = new Date().toISOString().split('T')[0]
-        const data = { ...lessonForm, courseId: parseInt(lessonForm.courseId), order: parseInt(lessonForm.order) }
+        const data = { ...lessonForm, courseId: parseInt(lessonForm.courseId), order: parseFloat(lessonForm.order) }
         
         try {
             if (editItem) {
@@ -411,7 +411,7 @@ export default function ContentManagerPage() {
                                 </div>
                                 <div className="form-group"><label className="form-label">ชื่อผู้สอน/ผู้สร้าง</label><input className="form-input" value={lessonForm.instructor} onChange={e => setLessonForm(p => ({ ...p, instructor: e.target.value }))} placeholder="ชื่ออาจารย์ หรือ ทีมงาน" /></div>
                                 <div className="form-group"><label className="form-label">ชื่อบทเรียน</label><input className="form-input" value={lessonForm.title} onChange={e => setLessonForm(p => ({ ...p, title: e.target.value }))} placeholder="ชื่อบทเรียน" /></div>
-                                <div className="form-group"><label className="form-label">ลำดับ</label><input type="number" className="form-input" value={lessonForm.order} onChange={e => setLessonForm(p => ({ ...p, order: e.target.value }))} min="1" /></div>
+                                <div className="form-group"><label className="form-label">ลำดับ</label><input type="number" className="form-input" value={lessonForm.order} onChange={e => setLessonForm(p => ({ ...p, order: e.target.value }))} min="1" step="any" /></div>
                                 <div className="form-group">
                                     <label className="form-label">เนื้อหา</label>
                                     <textarea ref={contentRef} className="form-input form-textarea" style={{ minHeight: '200px' }} value={lessonForm.content} onChange={e => setLessonForm(p => ({ ...p, content: e.target.value }))} placeholder="เนื้อหาบทเรียน..." />
