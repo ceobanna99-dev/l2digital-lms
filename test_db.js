@@ -61,4 +61,4 @@ async function backfill() {
     process.exit(0);
 }
 
-check();
+backfill();
